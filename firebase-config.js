@@ -23,10 +23,6 @@ const firebaseConfig = {
   appId: "1:173791675462:web:855c4e79ddd6576ff0f647",
   measurementId: "G-BEJLXG9G8H"
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
 // Allowed domains cho security check.
 // Thêm domain hosting thật của bạn vào đây.
 const ALLOWED_DOMAINS = [
