@@ -266,10 +266,23 @@
         STORAGE_KEY,
         FIREBASE_PATH,
 
-        /** Lấy toàn bộ câu hỏi trong kho (cache local) */
-        getAll() {
-            return _readLocal();
-        },
+        /** Lấy toàn bộ câu hỏi trong kho — đọc localStorage (cache), sync Firebase nền */
+getAll() {
+    // Tự động kéo dữ liệu từ Firebase về localStorage nếu Firebase sẵn sàng
+    if (_isFirebaseReady()) {
+        _loadFromFirebase().then(fbBank => {
+            if (fbBank && fbBank.length > 0) {
+                const merged = new Map();
+                fbBank.forEach(q => merged.set(q.id, q));
+                _readLocal().forEach(q => {
+                    if (!merged.has(q.id)) merged.set(q.id, q);
+                });
+                _writeLocal(Array.from(merged.values()));
+            }
+        }).catch(() => {});
+    }
+    return _readLocal();
+},
 
         /** Lấy một câu hỏi theo ID */
         getById(id) {
