@@ -4501,6 +4501,7 @@ window.App = App;
 // Initialize Lucide icons after DOM load and App init
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
+});
 // Auto-sync câu hỏi từ Firebase khi trang admin load
 window.addEventListener('load', function () {
     var waitFirebase = setInterval(function () {
