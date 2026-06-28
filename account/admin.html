@@ -4336,7 +4336,19 @@ const App = {
 
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
-
+// ✅ [FIX] Sync dữ liệu từ Firebase khi page load
+    if (typeof ExamBuilder !== 'undefined' && ExamBuilder.syncFromFirebase) {
+        ExamBuilder.syncFromFirebase()
+            .then(() => {
+                console.log('[Admin] ✅ Sync dữ liệu từ Firebase xong');
+                if (typeof App !== 'undefined' && App.renderExamList) {
+                    setTimeout(() => App.renderExamList(), 100);
+                }
+            })
+            .catch(err => {
+                console.warn('[Admin] ⚠️ Sync Firebase lỗi:', err);
+            });
+    }
     // Sync dữ liệu từ Firebase về localStorage khi admin.html load
     // Không sync = máy khác không thấy đề, câu hỏi, và danh sách tài khoản
     function syncAllFromFirebase() {
