@@ -4334,7 +4334,127 @@ const App = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', () => {
+    App.init();
+
+    // Sync dữ liệu từ Firebase về localStorage khi admin.html load
+    // Không sync = máy khác không thấy đề, câu hỏi, và danh sách tài khoản
+    function syncAllFromFirebase() {
+        // Sync đề thi
+        if (typeof ExamBuilder !== 'undefined' && ExamBuilder.syncFromFirebase) {
+            ExamBuilder.syncFromFirebase().then(() => {
+                App.renderExamList();
+                console.log('[Admin] Đồng bộ đề thi từ Firebase xong');
+            }).catch(err => console.warn('[Admin] Sync đề thi lỗi:', err));
+        }
+
+        // Sync kho câu hỏi
+        if (typeof QuestionBank !== 'undefined' && QuestionBank.syncFromFirebase) {
+            QuestionBank.syncFromFirebase().then(() => {
+                App.renderBank();
+                console.log('[Admin] Đồng bộ câu hỏi từ Firebase xong');
+            }).catch(err => console.warn('[Admin] Sync câu hỏi lỗi:', err));
+        }
+
+        // Load danh sách tài khoản
+        if (typeof FirebaseAPI !== 'undefined' && FirebaseAPI.getAllUsers) {
+            FirebaseAPI.getAllUsers().then(users => {
+                const container = document.getElementById('usersList');
+                if (!container) return;
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="icon">👤</div><h3>Chưa có tài khoản nào</h3></div>';
+                    return;
+                }
+                container.innerHTML = `
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="background:var(--surface-1);border-bottom:1px solid var(--border);">
+                                <th style="padding:10px 12px;text-align:left;font-weight:500;">Họ tên</th>
+                                <th style="padding:10px 12px;text-align:left;font-weight:500;">Username</th>
+                                <th style="padding:10px 12px;text-align:left;font-weight:500;">Role</th>
+                                <th style="padding:10px 12px;text-align:left;font-weight:500;">Trạng thái</th>
+                                <th style="padding:10px 12px;text-align:left;font-weight:500;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => `
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:10px 12px;">${u.fullname || '—'}</td>
+                                    <td style="padding:10px 12px;color:var(--text-secondary);">${u.username || '—'}</td>
+                                    <td style="padding:10px 12px;">
+                                        <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;
+                                            background:${u.role === 'admin' ? 'var(--bg-danger)' : 'var(--bg-accent)'};
+                                            color:${u.role === 'admin' ? 'var(--text-danger)' : 'var(--text-accent)'};">
+                                            ${u.role || 'user'}
+                                        </span>
+                                    </td>
+                                    <td style="padding:10px 12px;">
+                                        <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;
+                                            background:${u.banned ? 'var(--bg-danger)' : 'var(--bg-success)'};
+                                            color:${u.banned ? 'var(--text-danger)' : 'var(--text-success)'};">
+                                            ${u.banned ? 'Đã khóa' : 'Hoạt động'}
+                                        </span>
+                                    </td>
+                                    <td style="padding:10px 12px;display:flex;gap:6px;">
+                                        <button onclick="toggleBan('${u.id}', ${!u.banned})"
+                                            style="padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+                                                background:var(--surface-2);font-size:12px;cursor:pointer;">
+                                            ${u.banned ? '🔓 Mở khóa' : '🔒 Khóa'}
+                                        </button>
+                                        <button onclick="deleteUser('${u.id}', '${u.username}')"
+                                            style="padding:4px 10px;border-radius:4px;border:1px solid var(--border-danger);
+                                                color:var(--text-danger);background:var(--surface-2);font-size:12px;cursor:pointer;">
+                                            🗑 Xóa
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+                console.log('[Admin] Đã load', users.length, 'tài khoản');
+            }).catch(err => {
+                console.warn('[Admin] Load tài khoản lỗi:', err);
+                const container = document.getElementById('usersList');
+                if (container) container.innerHTML = '<div class="empty-state"><h3>Lỗi tải danh sách tài khoản</h3><p>Kiểm tra Firebase Rules</p></div>';
+            });
+        }
+    }
+
+    // Chờ Firebase sẵn sàng rồi mới sync
+    if (window.firebaseInitialized) {
+        syncAllFromFirebase();
+    } else {
+        window.addEventListener('firebaseReady', syncAllFromFirebase);
+        // Fallback: thử lại sau 3 giây nếu event không fire
+        setTimeout(() => {
+            if (!window._syncDone) syncAllFromFirebase();
+        }, 3000);
+    }
+});
+
+// Hàm khóa/mở khóa tài khoản
+async function toggleBan(userId, banned) {
+    if (!confirm(banned ? 'Khóa tài khoản này?' : 'Mở khóa tài khoản này?')) return;
+    const result = await FirebaseAPI.toggleBanUser(userId, banned);
+    if (result.success) {
+        alert(banned ? 'Đã khóa tài khoản!' : 'Đã mở khóa tài khoản!');
+        window.dispatchEvent(new Event('firebaseReady')); // Reload lại list
+    } else {
+        alert('Lỗi: ' + result.error);
+    }
+}
+
+// Hàm xóa tài khoản
+async function deleteUser(userId, username) {
+    if (!confirm('Xóa tài khoản "' + username + '"?\nHành động này không thể hoàn tác!')) return;
+    const result = await FirebaseAPI.deleteUser(userId);
+    if (result.success) {
+        alert('Đã xóa tài khoản và giải phóng IP!');
+        window.dispatchEvent(new Event('firebaseReady'));
+    } else {
+        alert('Lỗi: ' + result.error);
+    }
+}
 document.getElementById('modalOverlay')?.addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') App.closeModal(); });
 window.App = App;
 </script>
