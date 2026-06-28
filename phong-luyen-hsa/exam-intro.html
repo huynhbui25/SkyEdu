@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bắt đầu bài thi - SKY EDU</title>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+    :root {
+        --navy: #051A39;
+        --primary: #1677FF;
+        --primary-light: #38BDF8;
+        --text: #1F2937;
+        --text-muted: #64748B;
+        --border: #E5E7EB;
+        --bg-light: #F8FAFC;
+        --bg-card: #FFFFFF;
+        --success: #10B981;
+        --warning: #F59E0B;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #EBF4FF 0%, #FFF7ED 100%);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+    .intro-shell {
+        width: 100%;
+        max-width: 560px;
+        background: #FFFFFF;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.04);
+        overflow: hidden;
+        position: relative;
+    }
+    /* ===== Top bar (logo + step) ===== */
+    .intro-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--border);
+    }
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .logo-text-wrap { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-title { font-size: 17px; font-weight: 800; color: var(--navy); letter-spacing: -0.3px; }
+    .logo-subtitle { font-size: 10px; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 2px; }
+
+    .step-indicator {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--bg-light);
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+    }
+    .step-indicator b { color: var(--primary); }
+
+    /* ===== Body / slide container ===== */
+    .intro-body {
+        padding: 36px 32px 28px;
+        min-height: 360px;
+        position: relative;
+    }
+    .slide { display: none; animation: fadeIn 0.35s ease; }
+    .slide.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .slide-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 36px;
+        color: white;
+    }
+    .slide-icon.blue   { background: linear-gradient(135deg, #38BDF8 0%, #1677FF 100%); }
+    .slide-icon.amber  { background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%); }
+    .slide-icon.green  { background: linear-gradient(135deg, #34D399 0%, #10B981 100%); }
+
+    .slide-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+    .slide-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin-bottom: 22px;
+    }
+
+    /* ===== Step 1: Exam info card ===== */
+    .exam-info-card {
+        background: var(--bg-light);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-top: 8px;
+    }
+    .exam-info-name {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 4px;
+    }
+    .exam-info-code {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+    }
+    .exam-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .info-cell {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .info-cell iconify-icon { font-size: 20px; color: var(--primary); }
+    .info-cell-label { font-size: 11px; color: var(--text-muted); }
+    .info-cell-value { font-size: 15px; font-weight: 700; color: var(--navy); }
+
+    /* ===== Step 2: Rules list ===== */
+    .rules-list { list-style: none; padding: 0; margin: 0; }
+    .rules-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 10px;
+        background: white;
+    }
+    .rules-list .rule-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+    }
+    .rule-icon.red    { background: #EF4444; }
+    .rule-icon.blue   { background: var(--primary); }
+    .rule-icon.amber  { background: var(--warning); }
+    .rule-icon.green  { background: var(--success); }
+    .rule-text { font-size: 14px; line-height: 1.5; color: var(--text); }
+    .rule-text b { color: var(--navy); }
+
+    /* ===== Step 3: Confirm ===== */
+    .candidate-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--bg-light);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 16px;
+    }
+    .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #38BDF8 0%, #1677FF 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+    }
+    .candidate-info { flex: 1; }
+    .candidate-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .candidate-name  { font-size: 16px; font-weight: 700; color: var(--navy); margin-top: 2px; }
+
+    .agreement {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #FFFBEB;
+        border: 1px solid #FDE68A;
+        border-radius: 12px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .agreement.checked { background: #F0FDF4; border-color: #86EFAC; }
+    .agreement input { margin-top: 2px; transform: scale(1.15); accent-color: var(--success); }
+    .agreement span { font-size: 13px; line-height: 1.5; color: var(--text); }
+
+    /* ===== Footer nav ===== */
+    .intro-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 32px 24px;
+        gap: 12px;
+    }
+    .btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-ghost {
+        background: white;
+        color: var(--text-muted);
+        border-color: var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg-light); color: var(--text); }
+    .btn-primary {
+        background: linear-gradient(135deg, #38BDF8 0%, #1677FF 100%);
+        color: white;
+        margin-left: auto;
+        box-shadow: 0 4px 14px rgba(22, 119, 255, 0.30);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(22, 119, 255, 0.40); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-success {
+        background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+        color: white;
+        margin-left: auto;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.30);
+    }
+    .btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.40); }
+    .btn-success:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* dots */
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+    .dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
+
+    @media (max-width: 540px) {
+        .intro-body { padding: 24px 20px 20px; }
+        .intro-footer { padding: 14px 20px 20px; }
+        .intro-topbar { padding: 14px 20px; }
+        .slide-title { font-size: 19px; }
+        .exam-info-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<div class="intro-shell">
+    <!-- Top bar -->
+    <div class="intro-topbar">
+        <a href="javascript:history.back()" class="logo-container" style="text-decoration:none;">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 26C12 26 18 22 22 16C24 13 26 9 28 4C23 6 19 8 16 10C10 14 6 20 6 26Z" fill="#38BDF8"/>
+                <path d="M10 26C14 26 18 23 21 19C22.5 17 24 14 25 11C21 12 18 13.5 16 15C12 18 10 22 10 26Z" fill="#1677FF"/>
+            </svg>
+            <div class="logo-text-wrap">
+                <div class="logo-title">SKY EDU</div>
+                <div class="logo-subtitle">Fly Higher • Think Better</div>
+            </div>
+        </a>
+        <div class="step-indicator">Bước <b id="stepNum">1</b> / 3</div>
+    </div>
+
+    <!-- Slides -->
+    <div class="intro-body">
+
+        <!-- SLIDE 1: Thông tin đề -->
+        <div class="slide active" data-step="1">
+            <div class="slide-icon blue"><iconify-icon icon="lucide:file-text"></iconify-icon></div>
+            <div class="slide-title">Thông tin bài thi</div>
+            <div class="slide-subtitle">Vui lòng kiểm tra thông tin bài thi trước khi bắt đầu.</div>
+            <div class="exam-info-card">
+                <div class="exam-info-name" id="examName">—</div>
+                <div class="exam-info-code" id="examCode">—</div>
+                <div class="exam-info-grid">
+                    <div class="info-cell">
+                        <iconify-icon icon="lucide:list-checks"></iconify-icon>
+                        <div>
+                            <div class="info-cell-label">Số câu hỏi</div>
+                            <div class="info-cell-value" id="examQCount">—</div>
+                        </div>
+                    </div>
+                    <div class="info-cell">
+                        <iconify-icon icon="lucide:clock"></iconify-icon>
+                        <div>
+                            <div class="info-cell-label">Thời gian</div>
+                            <div class="info-cell-value" id="examTime">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Thể lệ -->
+        <div class="slide" data-step="2">
+            <div class="slide-icon amber"><iconify-icon icon="lucide:shield-alert"></iconify-icon></div>
+            <div class="slide-title">Thể lệ &amp; nội quy</div>
+            <div class="slide-subtitle">Bạn cần tuân thủ các quy định sau trong suốt quá trình làm bài.</div>
+            <ul class="rules-list">
+                <li>
+                    <div class="rule-icon red"><iconify-icon icon="lucide:ban"></iconify-icon></div>
+                    <div class="rule-text"><b>Không chuyển tab / thoát màn hình.</b> Hệ thống sẽ ghi nhận nếu bạn rời khỏi bài thi.</div>
+                </li>
+                <li>
+                    <div class="rule-icon blue"><iconify-icon icon="lucide:timer"></iconify-icon></div>
+                    <div class="rule-text">Bài thi được <b>tính giờ tự động</b>. Hết giờ hệ thống sẽ tự nộp bài.</div>
+                </li>
+                <li>
+                    <div class="rule-icon amber"><iconify-icon icon="lucide:alert-triangle"></iconify-icon></div>
+                    <div class="rule-text">Mỗi câu chỉ có <b>một đáp án đúng</b>. Có thể đánh dấu câu chưa chắc chắn để xem lại.</div>
+                </li>
+                <li>
+                    <div class="rule-icon green"><iconify-icon icon="lucide:check-check"></iconify-icon></div>
+                    <div class="rule-text">Sau khi hoàn thành, nhấn <b>"Nộp bài"</b> ở góc phải để gửi kết quả.</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- SLIDE 3: Xác nhận -->
+        <div class="slide" data-step="3">
+            <div class="slide-icon green"><iconify-icon icon="lucide:user-check"></iconify-icon></div>
+            <div class="slide-title">Xác nhận thí sinh</div>
+            <div class="slide-subtitle">Vui lòng kiểm tra thông tin và đồng ý điều khoản trước khi vào thi.</div>
+            <div class="candidate-card">
+                <div class="avatar" id="avatarLetter">—</div>
+                <div class="candidate-info">
+                    <div class="candidate-label">Họ và tên thí sinh</div>
+                    <div class="candidate-name" id="candidateName">—</div>
+                </div>
+            </div>
+            <label class="agreement" id="agreementBox">
+                <input type="checkbox" id="agreeCheck">
+                <span>Tôi đã đọc kỹ thể lệ và xác nhận thông tin cá nhân là chính xác. Tôi sẵn sàng bắt đầu bài thi.</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Footer nav -->
+    <div class="intro-footer">
+        <button class="btn btn-ghost" id="prevBtn"><iconify-icon icon="lucide:chevron-left"></iconify-icon> Quay lại</button>
+        <div class="dots">
+            <span class="dot active" data-dot="1"></span>
+            <span class="dot" data-dot="2"></span>
+            <span class="dot" data-dot="3"></span>
+        </div>
+        <button class="btn btn-primary" id="nextBtn">Tiếp tục <iconify-icon icon="lucide:chevron-right"></iconify-icon></button>
+    </div>
+</div>
+
+<script>
+(function () {
+    const params = new URLSearchParams(location.search);
+    const examId = params.get('examId');
+
+    // Tìm đề trong localStorage
+    const allExams = (() => {
+        try { return JSON.parse(localStorage.getItem('sky_exams') || localStorage.getItem('exams') || '[]'); }
+        catch (e) { return []; }
+    })();
+    const exam = allExams.find(e => String(e.id) === String(examId));
+
+    if (!exam) {
+        document.querySelector('.intro-body').innerHTML =
+            '<div style="text-align:center; padding:40px 20px;"><div style="font-size:48px; margin-bottom:16px;">😢</div><div style="font-size:18px; font-weight:700; color:var(--navy); margin-bottom:8px;">Không tìm thấy đề thi</div><div style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Đề này có thể đã bị xoá hoặc chưa được đồng bộ.</div><a href="index.html" style="display:inline-block; padding:10px 20px; background:var(--primary); color:white; border-radius:10px; text-decoration:none; font-weight:600;">← Quay lại danh sách</a></div>';
+        document.querySelector('.intro-footer').style.display = 'none';
+        return;
+    }
+
+    // ===== Render thông tin =====
+    document.getElementById('examName').textContent = exam.name || 'Đề thi TSA';
+    document.getElementById('examCode').textContent = 'Mã đề: ' + (exam.code || '—');
+    const qCount = exam.totalQuestions || (exam.questions ? exam.questions.length : 0);
+    document.getElementById('examQCount').textContent = (qCount || '—') + ' câu';
+    document.getElementById('examTime').textContent = (exam.timeMinutes || 60) + ' phút';
+
+    // Tên thí sinh
+    let userName = '';
+    try {
+        const cu = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (cu && (cu.fullname || cu.displayName)) userName = cu.fullname || cu.displayName;
+    } catch (e) {}
+    if (!userName) userName = localStorage.getItem('sky_user_name') || localStorage.getItem('user_name') || '—';
+    document.getElementById('candidateName').textContent = userName;
+    document.getElementById('avatarLetter').textContent = (userName || '?').trim().charAt(0).toUpperCase();
+
+    // ===== Step navigation =====
+    let step = 1;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const stepNum = document.getElementById('stepNum');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const agreeCheck = document.getElementById('agreeCheck');
+    const agreementBox = document.getElementById('agreementBox');
+
+    agreeCheck.addEventListener('change', () => {
+        agreementBox.classList.toggle('checked', agreeCheck.checked);
+        updateNextBtn();
+    });
+
+    function showStep(n) {
+        step = Math.max(1, Math.min(3, n));
+        slides.forEach(s => s.classList.toggle('active', Number(s.dataset.step) === step));
+        dots.forEach(d => d.classList.toggle('active', Number(d.dataset.dot) === step));
+        stepNum.textContent = step;
+        prevBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+        updateNextBtn();
+    }
+
+    function updateNextBtn() {
+        if (step === 3) {
+            nextBtn.classList.remove('btn-primary');
+            nextBtn.classList.add('btn-success');
+            nextBtn.innerHTML = '<iconify-icon icon="lucide:play"></iconify-icon> Bắt đầu thi';
+            nextBtn.disabled = !agreeCheck.checked;
+        } else {
+            nextBtn.classList.add('btn-primary');
+            nextBtn.classList.remove('btn-success');
+            nextBtn.innerHTML = 'Tiếp tục <iconify-icon icon="lucide:chevron-right"></iconify-icon>';
+            nextBtn.disabled = false;
+        }
+    }
+
+    prevBtn.addEventListener('click', () => showStep(step - 1));
+    nextBtn.addEventListener('click', () => {
+        if (step < 3) {
+            showStep(step + 1);
+        } else if (agreeCheck.checked) {
+            window.location.href = `exam.html?examId=${encodeURIComponent(exam.id)}`;
+        }
+    });
+
+    showStep(1);
+})();
+</script>
+
+</body>
+</html>

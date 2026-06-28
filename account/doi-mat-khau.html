@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đổi mật khẩu - SKY EDU</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #EBF4FF 0%, #FFF7ED 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px 40px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 20px 60px rgba(5, 26, 57, 0.1);
+    }
+    
+    .logo {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .logo-text {
+        font-size: 28px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #1677FF 0%, #4364F7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .logo-subtitle {
+        font-size: 13px;
+        color: #64748B;
+        margin-top: 4px;
+    }
+    
+    h1 {
+        font-size: 24px;
+        color: #0F172A;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+    
+    input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #E2E8F0;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.2s;
+        outline: none;
+    }
+    
+    input:focus {
+        border-color: #1677FF;
+        box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+    }
+    
+    .password-note {
+        font-size: 12px;
+        color: #64748B;
+        margin-top: 8px;
+        line-height: 1.5;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #1677FF 0%, #4364F7 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .btn-submit:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(22, 119, 255, 0.3);
+    }
+    
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .link {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .link a {
+        color: #1677FF;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .link a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Toast notification */
+    @keyframes fadeInDown {
+        from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    @keyframes fadeOutUp {
+        from { transform: translateX(-50%) translateY(0); opacity: 1; }
+        to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        <div class="logo-text">SKY EDU</div>
+        <div class="logo-subtitle">Fly Higher • Think Better</div>
+    </div>
+    
+    <h1>🔐 Đổi mật khẩu</h1>
+    
+    <div class="form-group">
+        <label>Mật khẩu hiện tại</label>
+        <input type="password" id="oldPassword" placeholder="Nhập mật khẩu hiện tại" required>
+    </div>
+    
+    <div class="form-group">
+        <label>Mật khẩu mới</label>
+        <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới" required>
+        <div class="password-note">
+            • Ít nhất 8 ký tự<br>
+            • 1 chữ hoa, 1 chữ thường<br>
+            • 1 số, 1 ký tự đặc biệt
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Xác nhận mật khẩu mới</label>
+        <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+    </div>
+    
+    <button class="btn-submit" id="submitBtn" onclick="changePassword()">
+        <span>🔒</span> Cập nhật mật khẩu
+    </button>
+    
+    <div class="link">
+        <a href="tai-khoan.html">← Quay lại tài khoản</a>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<!-- Firebase Config -->
+<script src="../firebase-config.js"></script>
+<script src="../assets/js/data-validator.js"></script>
+
+<script>
+// ✅ SỬA LỖI BẢO MẬT: Không lưu password trong localStorage, dùng Firebase Auth
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+if (!currentUser) {
+    window.location.href = "dang-nhap.html";
+}
+
+// ✅ NÂNG CẤP: Toast notification
+function showNotification(message, type = 'info') {
+    const existing = document.querySelector('.password-toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'password-toast';
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        z-index: 99999;
+        animation: fadeInDown 0.3s ease;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    `;
+    
+    if (type === 'success') {
+        toast.style.background = '#10B981';
+        toast.style.color = 'white';
+    } else if (type === 'error') {
+        toast.style.background = '#EF4444';
+        toast.style.color = 'white';
+    } else {
+        toast.style.background = '#1677FF';
+        toast.style.color = 'white';
+    }
+    
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'fadeOutUp 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+async function changePassword() {
+    const oldPass = document.getElementById('oldPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+    const btn = document.getElementById('submitBtn');
+    const originalContent = btn.innerHTML;
+    
+    // Validation
+    if (!oldPass || !newPass || !confirmPass) {
+        showNotification('⚠️ Vui lòng nhập đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    // Password strength check
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#]).{8,}$/;
+    if (!passwordRegex.test(newPass)) {
+        showNotification('❌ Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!', 'error');
+        return;
+    }
+    
+    if (newPass !== confirmPass) {
+        showNotification('❌ Mật khẩu xác nhận không khớp!', 'error');
+        return;
+    }
+    
+    if (oldPass === newPass) {
+        showNotification('❌ Mật khẩu mới phải khác mật khẩu cũ!', 'error');
+        return;
+    }
+    
+    // Set loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> Đang xử lý...';
+    
+    try {
+        // Re-authenticate user trước khi đổi mật khẩu
+        const user = firebase.auth().currentUser;
+        
+        if (!user) {
+            showNotification('❌ Vui lòng đăng nhập lại!', 'error');
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+            return;
+        }
+        
+        // Re-authenticate với credential
+        const credential = firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            oldPass
+        );
+        
+        await user.reauthenticateWithCredential(credential);
+        
+        // Đổi mật khẩu
+        await user.updatePassword(newPass);
+        
+        showNotification('✅ Đổi mật khẩu thành công!', 'success');
+        
+        // Chuyển về trang tài khoản sau 1.5s
+        setTimeout(() => {
+            window.location.href = 'tai-khoan.html';
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Lỗi đổi mật khẩu:', error);
+        
+        let errorMessage = '❌ Đã xảy ra lỗi. Vui lòng thử lại!';
+        
+        if (error.code === 'auth/wrong-password') {
+            errorMessage = '❌ Mật khẩu hiện tại không đúng!';
+        } else if (error.code === 'auth/weak-password') {
+            errorMessage = '❌ Mật khẩu mới quá yếu!';
+        } else if (error.code === 'auth/requires-recent-login') {
+            errorMessage = '⚠️ Vui lòng đăng nhập lại trước khi đổi mật khẩu!';
+            // Auto logout
+            setTimeout(() => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'dang-nhap.html';
+            }, 2000);
+        }
+        
+        showNotification(errorMessage, 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+    }
+}
+</script>
+
+</body>
+</html>

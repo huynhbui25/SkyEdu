@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng luyện TSA - SKY EDU</title>
+    <meta name="theme-color" content="#050B1A">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='45' fill='%2300BFFF'/%3E%3Cpath d='M30 150C60 150 90 130 120 90C135 70 150 45 165 15C135 30 105 45 90 60C60 90 30 120 30 150Z' fill='%233B82F6'/%3E%3Cpath d='M50 150C70 150 90 135 105 115C115 100 125 80 135 60C110 70 90 80 75 95C50 120 50 135 50 150Z' fill='white'/%3E%3C/svg%3E">
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Premium CSS -->
+    <link rel="stylesheet" href="../assets/css/premium-style.css">
+    
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <!-- TsaTopics (13 chuyên đề + Đề thực chiến) — single source of truth -->
+    <script src="../assets/js/tsa-topics.js"></script>
+    <script src="../assets/js/exam-builder.js"></script>
+
+    <!-- Firebase SDK (chỉ dùng để sync exams nếu có) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+
+    <style>
+        /* =========================================
+           PAGE VARIABLES
+           ========================================= */
+        :root {
+            --page-bg: #070D1F;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-bright: #FFFFFF;
+            --text-light: #E2E8F0;
+            --text-muted: #94A3B8;
+            --accent: #00D4FF;
+            --accent-secondary: #3B82F6;
+            --accent-violet: #8B5CF6;
+        }
+
+        /* =========================================
+           BACKGROUND EFFECTS
+           ========================================= */
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: var(--page-bg);
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 100%;
+            background: radial-gradient(ellipse at center top, rgba(0, 212, 255, 0.12) 0%, rgba(59, 130, 246, 0.08) 30%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .floating-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(0, 212, 255, 0.12);
+            top: 5%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(59, 130, 246, 0.1);
+            bottom: 10%;
+            right: -5%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -40px) scale(1.05); }
+            50% { transform: translate(-30px, 30px) scale(0.95); }
+            75% { transform: translate(30px, 40px) scale(1.02); }
+        }
+
+        /* =========================================
+           PAGE WRAPPER
+           ========================================= */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           MAIN LAYOUT
+           ========================================= */
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding-top: 100px;
+            gap: 32px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* =========================================
+           SECTION HEADER
+           ========================================= */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+
+        .section-badge iconify-icon {
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .section-title-gradient {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-desc {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* =========================================
+           LAYOUT: SIDEBAR + CONTENT
+           ========================================= */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 32px;
+            width: 100%;
+        }
+
+        /* =========================================
+           SIDEBAR
+           ========================================= */
+        .sidebar {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(59, 130, 246, 0.15));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-icon iconify-icon {
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-bright);
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Topic List */
+        .topic-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            background: rgba(0, 212, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .topic-item.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(59, 130, 246, 0.1));
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .topic-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--page-bg);
+            flex-shrink: 0;
+        }
+
+        .topic-item.active .topic-number {
+            background: var(--accent);
+        }
+
+        .topic-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .topic-item.active .topic-text {
+            color: var(--text-bright);
+        }
+
+        /* =========================================
+           MAIN CONTENT
+           ========================================= */
+        .main-content {
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .content-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content-icon iconify-icon {
+            font-size: 28px;
+            color: #A78BFA;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-bright);
+        }
+
+        .content-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Exam Grid */
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .exam-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .exam-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(139, 92, 246, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .exam-card:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .exam-card:hover::before {
+            opacity: 1;
+        }
+
+        .exam-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .exam-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exam-badge.tsa {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(59, 130, 246, 0.15));
+            color: var(--accent);
+        }
+
+        .exam-badge.level {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+        }
+
+        .exam-badge.level.easy { color: #4ADE80; }
+        .exam-badge.level.medium { color: #FACC15; }
+        .exam-badge.level.hard { color: #F87171; }
+
+        .exam-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(139, 92, 246, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .exam-icon iconify-icon {
+            font-size: 22px;
+            color: var(--accent);
+        }
+
+        .exam-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .exam-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .exam-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .exam-meta-item iconify-icon {
+            font-size: 14px;
+            color: var(--accent-secondary);
+        }
+
+        .exam-start {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .exam-card:hover .exam-start {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: var(--page-bg);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state iconify-icon {
+            font-size: 80px;
+            color: rgba(255, 255, 255, 0.08);
+            margin-bottom: 24px;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-state h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .empty-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .empty-cta:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.15));
+            border-color: rgba(0, 212, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media (max-width: 1024px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                max-height: none;
+            }
+
+            .topic-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding-top: 100px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .topic-list {
+                grid-template-columns: 1fr;
+            }
+
+            .exam-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-card {
+                padding: 20px;
+            }
+
+            .content-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 26px;
+            }
+
+            .section-badge {
+                font-size: 10px;
+                padding: 8px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="page-bg"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <div class="page-wrapper">
+        <!-- =========================================
+             NAVBAR
+        ========================================= -->
+        <header class="navbar" id="navbar">
+            <div class="navbar-content">
+                <a href="../index.html" class="logo-wrap">
+                    <svg width="44" height="44" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 26C12 26 18 22 22 16C24 13 26 9 28 4C23 6 19 8 16 10C10 14 6 20 6 26Z" fill="#38BDF8"/>
+                        <path d="M10 26C14 26 18 23 21 19C22.5 17 24 14 25 11C21 12 18 13.5 16 15C12 18 10 22 10 26Z" fill="#1677FF"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="logo-title">SKY EDU</span>
+                        <span class="logo-subtitle">Fly Higher • Think Better</span>
+                    </div>
+                </a>
+
+                <nav class="nav-center">
+                    <ul class="nav-links">
+                        <li><a href="../index.html">Trang chủ</a></li>
+                        <li><a href="../khoa-hoc-pages/index.html">Khóa học</a></li>
+                        <li><a href="../quy-doi-diem.html">Quy đổi điểm</a></li>
+                        <li><a href="index.html" class="active">Phòng luyện TSA</a></li>
+                        <li><a href="../phong-luyen-hsa/index.html">Phòng luyện HSA</a></li>
+                        <li><a href="../leaderboard.html">Bảng xếp hạng</a></li>
+                    </ul>
+                </nav>
+
+                <div class="nav-actions" id="navActions">
+                    <a href="../account/dang-nhap.html" class="btn-ghost">Đăng nhập</a>
+                    <a href="../account/dang-ky.html" class="btn-primary-sm">Đăng ký</a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <style>
+            .user-dropdown { position: relative; display: inline-block; }
+            .user-dropdown-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; color: #00D4FF; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+            .user-dropdown-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: rgba(0, 212, 255, 0.4); }
+            .user-dropdown-btn iconify-icon { font-size: 18px; transition: transform 0.3s ease; }
+            .user-dropdown.open .user-dropdown-btn iconify-icon:last-child { transform: rotate(180deg); }
+            .user-dropdown-content { display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 200px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 8px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); z-index: 1000; animation: dropdownFade 0.2s ease; }
+            @keyframes dropdownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            .user-dropdown.open .user-dropdown-content { display: block; }
+            .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: #E2E8F0; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
+            .dropdown-item:hover { background: rgba(0, 212, 255, 0.15); color: #00D4FF; }
+            .dropdown-item iconify-icon { font-size: 16px; color: #94A3B8; }
+            .dropdown-item:hover iconify-icon { color: #00D4FF; }
+            .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 8px 0; }
+            .dropdown-item.logout { color: #EF4444; }
+            .dropdown-item.logout:hover { background: rgba(239, 68, 68, 0.15); }
+            .dropdown-item.logout iconify-icon { color: #EF4444; }
+            .dropdown-item.admin-only { color: #FACC15; }
+            .dropdown-item.admin-only iconify-icon { color: #FACC15; }
+        </style>
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <div class="container">
+                <!-- Section Header -->
+                <div class="section-header">
+                    <div class="section-badge">
+                        <iconify-icon icon="lucide:target"></iconify-icon>
+                        <span>Phòng luyện TSA</span>
+                    </div>
+                    <h1 class="section-title">
+                        <span class="section-title-gradient">Luyện thi đánh giá tư duy</span>
+                    </h1>
+                    <p class="section-desc">
+                        Chọn chuyên đề và bắt đầu luyện tập với hệ thống đề thi chuẩn cấu trúc
+                    </p>
+                </div>
+
+                <!-- Layout: Sidebar + Content -->
+                <div class="layout-grid">
+                    <!-- Sidebar: Topics -->
+                    <aside class="sidebar">
+                        <div class="sidebar-card">
+                            <div class="sidebar-header">
+                                <div class="sidebar-icon">
+                                    <iconify-icon icon="lucide:book-open"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="sidebar-title">13 Chuyên đề + Đề thực chiến</h3>
+                                    <p class="sidebar-subtitle">Chọn chuyên đề để luyện</p>
+                                </div>
+                            </div>
+
+                            <div class="topic-list" id="topicList">
+                                <!-- Render động bằng JS để luôn đồng bộ với 13 chuyên đề TSA + Đề thực chiến -->
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Main Content: Exams -->
+                    <div class="main-content">
+                        <div class="content-card">
+                            <div class="content-header">
+                                <div class="content-icon">
+                                    <iconify-icon icon="lucide:file-question"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="content-title" id="selectedTopicTitle">Hàm số, đồ thị hàm số và đạo hàm</h3>
+                                    <p class="content-subtitle">Các đề thi available</p>
+                                </div>
+                            </div>
+
+                            <div class="exam-grid" id="examGrid">
+                                <!-- Hiện đang cập nhật -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // =========================================
+        // TOPICS DATA — dùng TsaTopics làm nguồn chuẩn
+        // =========================================
+        const TOPIC_MAP = {};   // key -> { title, num }
+        if (typeof TsaTopics !== 'undefined') {
+            TsaTopics.TSA_TOPICS.forEach(t => { TOPIC_MAP[t.key] = { title: t.title, num: t.num }; });
+            TsaTopics.EXTRA_CATEGORIES.forEach(c => { TOPIC_MAP[c.key] = { title: c.title, num: 0, extra: true, badge: c.badge, desc: c.desc }; });
+        } else {
+            // Fallback nếu tsa-topics.js chưa load
+            const fallback = {
+                'bat-pt':'Bất phương trình và quy hoạch tuyến tính','thong-ke':'Thống kê','so-hoc':'Số học',
+                'hh-phang':'Hình học phẳng và 3 đường conic','gioi-han':'Giới hạn và tính liên tục của hàm số',
+                'cap-so':'Cấp số, dãy số và hệ thức truy hồi','logarit':'Hàm số logarit, hàm lũy thừa và hàm số mũ',
+                'luong-giac':'Phương trình lượng giác','to-hop':'Tổ hợp – Xác suất cổ điển – Xác suất có điều kiện',
+                'ham-so':'Hàm số, đồ thị hàm số và đạo hàm','nguyen-ham':'Nguyên hàm & Tích phân',
+                'vector':'Vector & Hình học không gian có tọa độ','hh-khong-gian':'Hình học không gian thuần túy',
+                'thuc-chien':'Đề thực chiến','khung-de':'Khung đề thi'
+            };
+            Object.keys(fallback).forEach((k, i) => { TOPIC_MAP[k] = { title: fallback[k], num: i + 1, extra: k === 'thuc-chien' }; });
+        }
+
+        const TOPIC_KEYS = Object.keys(TOPIC_MAP);
+
+        // =========================================
+        // RENDER SIDEBAR — 13 chuyên đề + Đề thực chiến
+        // =========================================
+        function renderSidebar() {
+            const list = document.getElementById('topicList');
+            if (!list) return;
+            list.innerHTML = TOPIC_KEYS.map((key, idx) => {
+                const meta = TOPIC_MAP[key];
+                const numLabel = meta.extra ? (meta.badge || '🔥') : meta.num;
+                const text = meta.title + (meta.extra ? '' : '');
+                return `<div class="topic-item ${idx === 0 ? 'active' : ''}" data-topic="${key}">
+                    <span class="topic-number">${numLabel}</span>
+                    <span class="topic-text">${text}</span>
+                </div>`;
+            }).join('');
+            // bind lại sự kiện
+            list.querySelectorAll('.topic-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    list.querySelectorAll('.topic-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    renderExams(this.dataset.topic);
+                });
+            });
+        }
+
+        // =========================================
+        // RENDER EXAMS — lấy đề thi từ ExamBuilder, lọc theo chuyên đề
+        // =========================================
+        function getAllExamsMerged() {
+            // Hợp nhất exams từ nhiều nguồn (giống exam.html): exams + sky_exams + phongluyen_exams
+            const out = [];
+            const seen = new Set();
+            const tryPush = (arr, src) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach(e => { if (e && e.id && !seen.has(e.id)) { seen.add(e.id); out.push(Object.assign({}, e, { _src: src })); } });
+            };
+            try {
+                const a = JSON.parse(localStorage.getItem('exams') || '[]'); tryPush(a, 'exams');
+            } catch (e) {}
+            try {
+                const a = JSON.parse(localStorage.getItem('sky_exams') || '[]'); tryPush(a, 'sky_exams');
+            } catch (e) {}
+            try {
+                const a = JSON.parse(localStorage.getItem('phongluyen_exams') || '[]'); tryPush(a, 'phongluyen_exams');
+            } catch (e) {}
+            return out;
+        }
+
+        function renderExams(topicId) {
+            const topic = TOPIC_MAP[topicId];
+            const examGrid = document.getElementById('examGrid');
+            const titleEl = document.getElementById('selectedTopicTitle');
+            const subtitleEl = document.querySelector('.content-subtitle');
+
+            if (!topic) { examGrid.innerHTML = ''; return; }
+            titleEl.textContent = topic.title;
+            if (subtitleEl) subtitleEl.textContent = topic.extra ? 'Đề tổng hợp mô phỏng kì thi thật' : 'Các đề thi đang có';
+
+            const all = getAllExamsMerged();
+            const filtered = all
+                .filter(e => (e.type || 'tsa') === 'tsa')
+                .filter(e => (e.category || 'thuc-chien') === topicId);
+
+            if (filtered.length === 0) {
+                examGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <iconify-icon icon="lucide:inbox"></iconify-icon>
+                        <h4>Chưa có đề thi nào</h4>
+                        <p>Vui lòng liên hệ admin để bổ sung đề cho chuyên đề này.</p>
+                    </div>`;
+                return;
+            }
+
+            examGrid.innerHTML = filtered.map(exam => {
+                const type = (exam.type || 'tsa').toUpperCase();
+                const lvl = inferLevel(exam);
+                const lvlBadge = lvl ? `<span class="exam-badge level ${lvl.cls}">${lvl.label}</span>` : '';
+                return `
+                <div class="exam-card" data-exam-id="${exam.id}">
+                    <div class="exam-card-header">
+                        <span class="exam-badge tsa">${type}</span>
+                        ${lvlBadge}
+                        <div class="exam-icon"><iconify-icon icon="lucide:file-text"></iconify-icon></div>
+                    </div>
+                    <h3 class="exam-title">${escapeHtml(exam.name || 'Đề thi')}</h3>
+                    <div class="exam-meta">
+                        <div class="exam-meta-item"><iconify-icon icon="lucide:hash"></iconify-icon> ${escapeHtml(exam.code || '')}</div>
+                        <div class="exam-meta-item"><iconify-icon icon="lucide:list-checks"></iconify-icon> ${(exam.questions || []).length} câu</div>
+                        <div class="exam-meta-item"><iconify-icon icon="lucide:clock"></iconify-icon> ${exam.timeMinutes || 150} phút</div>
+                    </div>
+                    <button class="exam-start" onclick="startExamById('${exam.id}')">
+                        <iconify-icon icon="lucide:play"></iconify-icon> Vào thi ngay
+                    </button>
+                </div>`;
+            }).join('');
+        }
+
+        /** Suy level từ số câu / điểm để gắn badge màu */
+        function inferLevel(exam) {
+            const n = (exam.questions || []).length;
+            if (n === 0) return null;
+            if (n <= 15) return { label: 'Dễ', cls: 'easy' };
+            if (n <= 35) return { label: 'TB', cls: 'medium' };
+            return { label: 'Khó', cls: 'hard' };
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+                { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+            ));
+        }
+
+        // =========================================
+        // START EXAM — chuyển sang exam.html?examId=...
+        // =========================================
+        function startExamById(examId) {
+            window.location.href = 'exam.html?examId=' + encodeURIComponent(examId);
+        }
+
+        // =========================================
+        // INIT
+        // =========================================
+        renderSidebar();
+
+        // Đồng bộ exams từ Firebase (nếu có) trước khi render
+        syncFirebaseExams().finally(() => {
+            renderExams('bat-pt');
+            updateNavAuthState();
+        });
+
+        /**
+         * Đồng bộ exams từ Firebase 'phongluyen_exams/' + 'exams/' về localStorage['exams'].
+         * Nếu không có Firebase (offline / dev) thì bỏ qua, không lỗi.
+         */
+        function syncFirebaseExams() {
+            return new Promise((resolve) => {
+                try {
+                    if (typeof firebase === 'undefined' || !firebase.database) { resolve(); return; }
+                    const db = firebase.database();
+                    if (!db) { resolve(); return; }
+
+                    const promises = [];
+                    ['phongluyen_exams', 'exams'].forEach(path => {
+                        try {
+                            promises.push(db.ref(path).once('value'));
+                        } catch (e) { /* ignore */ }
+                    });
+                    Promise.all(promises).then(results => {
+                        try {
+                            const merged = [];
+                            const seen = new Set();
+                            const localRaw = localStorage.getItem('exams');
+                            const localArr = localRaw ? JSON.parse(localRaw) : [];
+                            localArr.forEach(e => { if (e && e.id && !seen.has(e.id)) { seen.add(e.id); merged.push(e); } });
+                            results.forEach(snap => {
+                                const obj = snap.val() || {};
+                                Object.values(obj).forEach(e => {
+                                    if (e && e.id && !seen.has(e.id)) { seen.add(e.id); merged.push(e); }
+                                });
+                            });
+                            if (merged.length > localArr.length) {
+                                localStorage.setItem('exams', JSON.stringify(merged));
+                            }
+                        } catch (e) { console.warn('[TSA room] Firebase sync error:', e); }
+                        resolve();
+                    }).catch(() => resolve());
+                } catch (e) { resolve(); }
+            });
+        }
+
+        // Dropdown toggle on click
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (!dropdown) return;
+            if (dropdown.contains(e.target)) {
+                dropdown.classList.toggle('open');
+            } else {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // =========================================
+        // NAVBAR SCROLL EFFECT
+        // =========================================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.pageYOffset > 50);
+        });
+    </script>
+</body>
+</html>

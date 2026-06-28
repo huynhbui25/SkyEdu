@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa học - SKY EDU</title>
+    <meta name="theme-color" content="#040816">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='45' fill='%2300BFFF'/%3E%3Cpath d='M30 150C60 150 90 130 120 90C135 70 150 45 165 15C135 30 105 45 90 60C60 90 30 120 30 150Z' fill='%233B82F6'/%3E%3Cpath d='M50 150C70 150 90 135 105 115C115 100 125 80 135 60C110 70 90 80 75 95C50 120 50 135 50 150Z' fill='white'/%3E%3C/svg%3E">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <style>
+        /* =========================================
+           SKY EDU - Premium SaaS Education 2026
+           ========================================= */
+
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+        /* =========================================
+           CSS VARIABLES
+           ========================================= */
+        :root {
+            --bg-primary: #040816;
+            --bg-card: #0B1223;
+            --bg-card-hover: #0F1629;
+            
+            --accent-cyan: #00D4FF;
+            --accent-blue: #3B82F6;
+            --accent-violet: #8B5CF6;
+            
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            
+            --radius-lg: 24px;
+            
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 212, 255, 0.05);
+            --shadow-card-hover: 0 20px 50px rgba(59, 130, 246, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.2), 0 0 40px rgba(0, 212, 255, 0.08);
+            --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(139, 92, 246, 0.2);
+            
+            /* Premium Variables */
+            --dark-navy: #040816;
+            --glass-bg: rgba(4, 8, 22, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+        }
+
+        /* =========================================
+           RESET & BASE
+           ========================================= */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           BACKGROUND EFFECTS
+           ========================================= */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1200px;
+            height: 600px;
+            background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0, 212, 255, 0.06) 0%, rgba(139, 92, 246, 0.03) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* =========================================
+           LAYOUT
+           ========================================= */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* =========================================
+           NAVBAR (Premium Style from Homepage)
+           ========================================= */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(4, 8, 22, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            max-width: 1340px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .logo-wrap svg {
+            width: 44px;
+            height: 44px;
+            filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.5));
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-center {
+            display: flex;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-links li a {
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links li a:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-links li a.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-ghost {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-primary-sm {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-navy);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            background: var(--gradient-primary);
+            box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
+        }
+
+        .btn-primary-sm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 191, 255, 0.4);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .mobile-menu-btn span {
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* =========================================
+           MAIN CONTENT
+           ========================================= */
+        .main {
+            padding-top: 120px;
+            padding-bottom: 80px;
+        }
+
+        /* =========================================
+           SECTION HEADER
+           ========================================= */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-top: 40px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .section-title-line {
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title-line::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-violet), transparent);
+            border-radius: 3px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 40px rgba(139, 92, 246, 0.4);
+        }
+
+        /* =========================================
+           COURSES GRID
+           ========================================= */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        /* =========================================
+           COURSE CARD
+           ========================================= */
+        .course-card {
+            position: relative;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), rgba(139, 92, 246, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .course-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: radial-gradient(ellipse at bottom, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .course-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-card-hover);
+        }
+
+        .course-card:hover::before,
+        .course-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Center Card - 5% larger */
+        .course-card.center-card {
+            transform: scale(1.05);
+            z-index: 2;
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .course-card.center-card:hover {
+            transform: scale(1.05) translateY(-8px);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        /* Card Badge - HOT */
+        .course-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Card Icon - 3D Style */
+        .course-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .course-icon iconify-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+            color: var(--accent-cyan);
+            position: relative;
+            z-index: 1;
+        }
+
+        .course-icon.violet iconify-icon {
+            color: var(--accent-violet);
+        }
+
+        .course-icon.blue iconify-icon {
+            color: var(--accent-blue);
+        }
+
+        /* Card Content */
+        .course-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            line-height: 1.3;
+        }
+
+        .course-price {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .course-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .course-features li {
+            position: relative;
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .course-features li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            border-radius: 50%;
+        }
+
+        /* Card Footer */
+        .course-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .course-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .course-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        .course-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(0, 212, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .course-btn:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .course-btn.gradient {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            color: white;
+            border: none;
+        }
+
+        .course-btn.gradient:hover {
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-2px);
+        }
+
+        .course-btn iconify-icon {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .course-btn:hover iconify-icon {
+            transform: translateX(4px);
+        }
+
+        /* =========================================
+           INFO CARDS SECTION
+           ========================================= */
+        .info-section {
+            margin-bottom: 40px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-icon iconify-icon {
+            font-size: 24px;
+        }
+
+        .info-icon.cyan {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .info-icon.blue {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .info-icon.violet {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+            padding-left: 0;
+        }
+
+        .info-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* =========================================
+           ANIMATIONS
+           ========================================= */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+        .stagger-6 { transition-delay: 0.6s; }
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media (max-width: 1024px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .course-card.center-card {
+                grid-column: span 2;
+                transform: scale(1.02);
+            }
+
+            .course-card.center-card:hover {
+                transform: scale(1.02) translateY(-8px);
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .info-grid .info-card:last-child {
+                grid-column: span 2;
+                max-width: 400px;
+                justify-self: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-center {
+                display: none;
+            }
+
+            .btn-ghost {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .section-header {
+                margin-bottom: 36px;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .course-card.center-card {
+                grid-column: span 1;
+                transform: none;
+                border-color: rgba(139, 92, 246, 0.2);
+            }
+
+            .course-card {
+                padding: 24px;
+            }
+
+            .course-name {
+                font-size: 18px;
+            }
+
+            .course-price {
+                font-size: 24px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid .info-card:last-child {
+                grid-column: span 1;
+                max-width: none;
+            }
+
+            .main {
+                padding-bottom: 60px;
+            }
+
+            .courses-grid {
+                margin-bottom: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .section-header {
+                padding-top: 24px;
+                margin-bottom: 32px;
+            }
+
+            .course-card {
+                padding: 20px;
+            }
+
+            .course-icon {
+                width: 56px;
+                height: 56px;
+            }
+
+            .course-icon iconify-icon {
+                font-size: 28px;
+            }
+
+            .info-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="page-wrapper">
+        <!-- Navbar -->
+        <header class="navbar" id="navbar">
+            <div class="navbar-content">
+                <!-- Logo -->
+                <a href="../index.html" class="logo-wrap">
+                    <svg width="44" height="44" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 26C12 26 18 22 22 16C24 13 26 9 28 4C23 6 19 8 16 10C10 14 6 20 6 26Z" fill="#38BDF8"/>
+                        <path d="M10 26C14 26 18 23 21 19C22.5 17 24 14 25 11C21 12 18 13.5 16 15C12 18 10 22 10 26Z" fill="#1677FF"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="logo-title">SKY EDU</span>
+                        <span class="logo-subtitle">Fly Higher • Think Better</span>
+                    </div>
+                </a>
+
+                <!-- Center Menu -->
+                <nav class="nav-center">
+                    <ul class="nav-links">
+                        <li><a href="../index.html">Trang chủ</a></li>
+                        <li><a href="index.html" class="active">Khóa học</a></li>
+                        <li><a href="../quy-doi-diem.html">Quy đổi điểm</a></li>
+                        <li><a href="../phong-luyen-tsa/index.html">Phòng luyện TSA</a></li>
+                        <li><a href="../phong-luyen-hsa/index.html">Phòng luyện HSA</a></li>
+                        <li><a href="../leaderboard.html">Bảng xếp hạng</a></li>
+                    </ul>
+                </nav>
+
+                <!-- Right Actions -->
+                <div class="nav-actions" id="navActions">
+                    <a href="../account/dang-nhap.html" class="btn-ghost">Đăng nhập</a>
+                    <a href="../account/dang-ky.html" class="btn-primary-sm">Đăng ký</a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <style>
+                .user-dropdown { position: relative; display: inline-block; }
+                .user-dropdown-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; color: #00D4FF; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+                .user-dropdown-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: rgba(0, 212, 255, 0.4); }
+                .user-dropdown-btn iconify-icon { font-size: 18px; transition: transform 0.3s ease; }
+                .user-dropdown.open .user-dropdown-btn iconify-icon:last-child { transform: rotate(180deg); }
+                .user-dropdown-content { display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 200px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 8px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); z-index: 1000; animation: dropdownFade 0.2s ease; }
+                @keyframes dropdownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                .user-dropdown.open .user-dropdown-content { display: block; }
+                .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: #E2E8F0; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
+                .dropdown-item:hover { background: rgba(0, 212, 255, 0.15); color: #00D4FF; }
+                .dropdown-item iconify-icon { font-size: 16px; color: #94A3B8; }
+                .dropdown-item:hover iconify-icon { color: #00D4FF; }
+                .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 8px 0; }
+                .dropdown-item.logout { color: #EF4444; }
+                .dropdown-item.logout:hover { background: rgba(239, 68, 68, 0.15); }
+                .dropdown-item.logout iconify-icon { color: #EF4444; }
+                .dropdown-item.admin-only { color: #FACC15; }
+                .dropdown-item.admin-only iconify-icon { color: #FACC15; }
+        </style>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Section Header -->
+                <div class="section-header fade-up">
+                    <h1 class="section-title">
+                        Danh sách <span class="section-title-line">khóa học nổi bật</span>
+                    </h1>
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-grid">
+                    <!-- Card 1: Gói Chuyên Đề -->
+                    <div class="course-card fade-up stagger-1">
+                        <div class="course-icon">
+                            <iconify-icon icon="lucide:book-open"></iconify-icon>
+                        </div>
+                        <h3 class="course-name">Gói Chuyên Đề</h3>
+                        <div class="course-price">179.000 VND</div>
+                        <ul class="course-features">
+                            <li>Hệ thống chuyên đề bám sát cấu trúc TSA</li>
+                            <li>Bài tập tự luyện có lời giải chi tiết</li>
+                            <li>File viết tay độc quyền cho từng chuyên đề</li>
+                        </ul>
+                        <div class="course-footer">
+                            <span class="course-status">
+                                <span class="course-status-dot"></span>
+                                Đang cập nhật
+                            </span>
+                            <a href="#" class="course-btn">
+                                Tìm hiểu thêm
+                                <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Combo Phòng Luyện và Chuyên Đề (HOT) -->
+                    <div class="course-card center-card fade-up stagger-2">
+                        <span class="course-badge">HOT</span>
+                        <div class="course-icon violet">
+                            <iconify-icon icon="lucide:crown"></iconify-icon>
+                        </div>
+                        <h3 class="course-name">Combo Phòng Luyện<br>và Chuyên Đề</h3>
+                        <div class="course-price">379.000 VND</div>
+                        <ul class="course-features">
+                            <li>Toàn bộ quyền lợi gói chuyên đề</li>
+                            <li>Phòng luyện chuẩn cấu trúc kỳ thi TSA</li>
+                            <li>Hệ thống đề nâng cao và dự đoán</li>
+                            <li>Video chữa chi tiết từng đề thi thử</li>
+                        </ul>
+                        <div class="course-footer">
+                            <span class="course-status">
+                                <span class="course-status-dot"></span>
+                                Đang cập nhật
+                            </span>
+                            <a href="#" class="course-btn gradient">
+                                Đăng ký ngay
+                                <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Phòng Luyện Đề -->
+                    <div class="course-card fade-up stagger-3">
+                        <div class="course-icon blue">
+                            <iconify-icon icon="lucide:monitor"></iconify-icon>
+                        </div>
+                        <h3 class="course-name">Phòng Luyện Đề</h3>
+                        <div class="course-price">239.000 VND</div>
+                        <ul class="course-features">
+                            <li>Giao diện mô phỏng kỳ thi chuẩn cấu trúc</li>
+                            <li>Video chữa chi tiết từng bộ đề</li>
+                            <li>Thống kê, phân tích kết quả và gợi ý cải thiện</li>
+                        </ul>
+                        <div class="course-footer">
+                            <span class="course-status">
+                                <span class="course-status-dot"></span>
+                                Đang cập nhật
+                            </span>
+                            <a href="#" class="course-btn">
+                                Tìm hiểu thêm
+                                <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Cards Section -->
+                <div class="info-section">
+                    <div class="info-grid">
+                        <!-- Info Card 1: Khóa học -->
+                        <div class="info-card fade-up stagger-4">
+                            <div class="info-icon cyan">
+                                <iconify-icon icon="lucide:book-marked" style="color: var(--accent-cyan);"></iconify-icon>
+                            </div>
+                            <h4 class="info-title">Khóa học</h4>
+                            <ul class="info-list">
+                                <li>Hệ thống bài tập từ cơ bản đến nâng cao</li>
+                                <li>Bổ trợ kiến thức lớp 10 và 11</li>
+                            </ul>
+                        </div>
+
+                        <!-- Info Card 2: Phòng luyện TSA -->
+                        <div class="info-card fade-up stagger-5">
+                            <div class="info-icon blue">
+                                <iconify-icon icon="lucide:target" style="color: var(--accent-blue);"></iconify-icon>
+                            </div>
+                            <h4 class="info-title">Phòng luyện TSA</h4>
+                            <ul class="info-list">
+                                <li>Giao diện mô phỏng chuẩn cấu trúc kỳ thi</li>
+                                <li>Bộ đề nền tảng</li>
+                                <li>Bộ đề nâng cao</li>
+                                <li>Bộ đề dự đoán</li>
+                            </ul>
+                        </div>
+
+                        <!-- Info Card 3: Ưu đãi -->
+                        <div class="info-card fade-up stagger-6">
+                            <div class="info-icon violet">
+                                <iconify-icon icon="lucide:gift" style="color: var(--accent-violet);"></iconify-icon>
+                            </div>
+                            <h4 class="info-title">Ưu đãi</h4>
+                            <ul class="info-list">
+                                <li>Tặng khóa Bổ trợ CASIO</li>
+                                <li>Mentor hỗ trợ 40 tuần TSA</li>
+                                <li>Hai bạn đăng ký cùng nhau giảm 36K/người</li>
+                                <li>Ba bạn đăng ký cùng nhau giảm 50K/người</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // =========================================
+        // NAVBAR SCROLL EFFECT
+        // =========================================
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // =========================================
+        // MOBILE MENU TOGGLE
+        // =========================================
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navCenter = document.querySelector('.nav-center');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                navCenter.classList.toggle('active');
+                mobileMenuBtn.classList.toggle('active');
+            });
+        }
+
+        // =========================================
+        // INTERSECTION OBSERVER - Fade Animations
+        // =========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-up').forEach(el => {
+                observer.observe(el);
+            });
+
+            // User auth state
+            function updateNavAuthState() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                const navActions = document.getElementById('navActions');
+
+                if (currentUser) {
+                    const isAdmin = currentUser.role === 'admin' || currentUser.role === 'moderator';
+                    navActions.innerHTML = `
+                        <div class="user-dropdown">
+                            <button class="user-dropdown-btn">
+                                <iconify-icon icon="lucide:user"></iconify-icon>
+                                ${currentUser.fullname || currentUser.username}
+                                <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+                            </button>
+                            <div class="user-dropdown-content">
+                                <a href="../dashboard.html" class="dropdown-item">
+                                    <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
+                                    Dashboard
+                                </a>
+                                <a href="../account/tai-khoan.html" class="dropdown-item">
+                                    <iconify-icon icon="lucide:user-circle"></iconify-icon>
+                                    Hồ sơ cá nhân
+                                </a>
+                                <a href="../account/doi-mat-khau.html" class="dropdown-item">
+                                    <iconify-icon icon="lucide:key"></iconify-icon>
+                                    Đổi mật khẩu
+                                </a>
+                                ${isAdmin ? `
+                                <a href="../account/admin.html" class="dropdown-item admin-only">
+                                    <iconify-icon icon="lucide:shield"></iconify-icon>
+                                    Admin Panel
+                                </a>
+                                ` : ''}
+                                <div class="dropdown-divider"></div>
+                                <a href="#" onclick="logout(); return false;" class="dropdown-item logout">
+                                    <iconify-icon icon="lucide:log-out"></iconify-icon>
+                                    Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                            <span></span><span></span><span></span>
+                        </button>
+                    `;
+                }
+            }
+
+            function logout() {
+                localStorage.removeItem('currentUser');
+                window.location.href = '../account/dang-nhap.html';
+            }
+
+            updateNavAuthState();
+
+            // Dropdown toggle on click
+            document.addEventListener('click', function(e) {
+                const dropdown = document.querySelector('.user-dropdown');
+                if (!dropdown) return;
+                if (dropdown.contains(e.target)) {
+                    dropdown.classList.toggle('open');
+                } else {
+                    dropdown.classList.remove('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

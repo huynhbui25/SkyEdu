@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Không tìm thấy trang | SKY EDU</title>
+    <meta name="theme-color" content="#050B1A">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='45' fill='%2300BFFF'/%3E%3Cpath d='M30 150C60 150 90 130 120 90C135 70 150 45 165 15C135 30 105 45 90 60C60 90 30 120 30 150Z' fill='%233B82F6'/%3E%3Cpath d='M50 150C70 150 90 135 105 115C115 100 125 80 135 60C110 70 90 80 75 95C50 120 50 135 50 150Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="assets/css/premium-style.css">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script>
+        // GitHub Pages SPA fallback: nếu URL không phải /, chuyển về root để index.html xử lý
+        (function () {
+            try {
+                var path = window.location.pathname;
+                var search = window.location.search || '';
+                var hash = window.location.hash || '';
+                // Nếu là path hợp lệ trong repo (file có .html hoặc thư mục có index.html) thì KHÔNG redirect
+                var isHtml = /\.html?$/i.test(path);
+                var knownDirs = ['/phong-luyen-tsa/', '/phong-luyen-hsa/', '/khoa-hoc-pages/', '/account/', '/assets/'];
+                var isKnown = knownDirs.some(function (d) { return path.indexOf(d) === 0; });
+
+                if (!isHtml && !isKnown && path !== '/' && path !== '/index.html') {
+                    window.location.replace('/' + path.replace(/^\/+/, '') + search + hash);
+                }
+            } catch (e) {
+                console.warn('404 redirect script error:', e);
+            }
+        })();
+    </script>
+    <style>
+        :root { --page-bg: #070D1F; }
+        .page-bg { position: fixed; inset: 0; z-index: 0; background: var(--page-bg); }
+        .bg-gradient { position: fixed; top: -50%; left: 50%; transform: translateX(-50%); width: 150%; height: 100%; background: radial-gradient(ellipse at center top, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.05) 30%, transparent 70%); pointer-events: none; z-index: 0; }
+        .bg-grid { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+        .floating-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 20s ease-in-out infinite; }
+        .orb-1 { width: 400px; height: 400px; background: rgba(239, 68, 68, 0.08); top: 10%; left: 20%; }
+        .orb-2 { width: 300px; height: 300px; background: rgba(59, 130, 246, 0.06); bottom: 20%; right: 15%; animation-delay: -7s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(30px, -30px) scale(1.05); } 50% { transform: translate(-20px, 20px) scale(0.95); } 75% { transform: translate(20px, 30px) scale(1.02); } }
+
+        .error-wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+
+        .error-card { text-align: center; animation: fadeInUp 0.8s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .error-icon { width: 120px; height: 120px; margin: 0 auto 32px; border-radius: 50%; background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(59, 130, 246, 0.15)); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); } 50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.5); } }
+        .error-icon iconify-icon { font-size: 56px; color: #EF4444; }
+
+        .error-code { font-size: 100px; font-weight: 900; background: linear-gradient(135deg, #EF4444, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 16px; }
+
+        .error-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+
+        .error-desc { font-size: 16px; color: #94A3B8; max-width: 400px; margin: 0 auto 32px; line-height: 1.6; }
+
+        .error-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: linear-gradient(135deg, #00D4FF, #3B82F6); color: #050B1A; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; transition: all 0.3s ease; }
+        .error-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0, 191, 255, 0.4); }
+
+        @media (max-width: 480px) {
+            .error-code { font-size: 72px; }
+            .error-title { font-size: 24px; }
+            .error-icon { width: 100px; height: 100px; }
+            .error-icon iconify-icon { font-size: 44px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-bg"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <div class="error-wrapper">
+        <div class="error-card">
+            <div class="error-icon">
+                <iconify-icon icon="lucide:search-x"></iconify-icon>
+            </div>
+            <div class="error-code">404</div>
+            <h1 class="error-title">Không tìm thấy trang</h1>
+            <p class="error-desc">Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển đến vị trí khác.</p>
+            <a href="index.html" class="error-btn">
+                <iconify-icon icon="lucide:home"></iconify-icon>
+                Về trang chủ
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lộ trình TSA 2027 - SKY EDU</title>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/unified-platform.css">
+    <style>
+        :root {
+            --bg-base: #050816;
+            --bg-gradient: linear-gradient(135deg, #050816 0%, #0d1324 50%, #050816 100%);
+            --card-surface: #0d1324;
+            --border-color: rgba(255,255,255,0.08);
+            --primary: #3B82F6;
+            --primary-light: #60A5FA;
+            --violet: #8B5CF6;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+        }
+
+        .roadmap-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Header */
+        .roadmap-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .roadmap-header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(12px);
+            color: var(--primary-light);
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .roadmap-header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        .roadmap-header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .roadmap-meta-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .roadmap-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Timeline */
+        .roadmap-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 60px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+        }
+        .timeline-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, #10B981 0%, #8B5CF6 50%, #EC4899 100%);
+            border-radius: 999px;
+            transition: height 1.5s ease;
+        }
+
+        /* Stage Card */
+        .stage-card {
+            position: relative;
+            margin-left: 100px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        .stage-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .stage-card::before {
+            content: '';
+            position: absolute;
+            left: -52px;
+            top: 44px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--card-surface);
+            border: 3px solid rgba(255,255,255,0.15);
+            z-index: 2;
+            transition: all 0.3s;
+        }
+        .stage-card.active::before {
+            background: var(--stage-color, #10B981);
+            border-color: var(--stage-color, #10B981);
+            box-shadow: 0 0 20px var(--stage-color, #10B981);
+        }
+        .stage-card:hover::before {
+            transform: scale(1.4);
+        }
+        .stage-inner {
+            background: var(--card-surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 28px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stage-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--stage-color, #3B82F6);
+        }
+        .stage-card:hover .stage-inner {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .stage-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stage-icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .stage-icon-wrap iconify-icon {
+            font-size: 32px;
+            color: var(--stage-color, var(--primary-light));
+        }
+        .stage-info {
+            flex: 1;
+        }
+        .stage-number {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--stage-color, var(--primary-light));
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .stage-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .stage-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: var(--primary-light);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .stage-tasks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .stage-task {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .stage-task iconify-icon {
+            color: var(--stage-color, #10B981);
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .stage-task span {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Summary */
+        .roadmap-summary {
+            background: var(--card-surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 60px;
+            text-align: center;
+        }
+        .summary-target {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            padding: 16px 28px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+        .summary-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .summary-icon iconify-icon {
+            font-size: 28px;
+            color: white;
+        }
+        .summary-target-text {
+            text-align: left;
+        }
+        .summary-target-text span {
+            color: var(--text-secondary);
+            font-size: 14px;
+            display: block;
+        }
+        .summary-target-text strong {
+            color: #10B981;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        .summary-stat {
+            text-align: center;
+        }
+        .summary-stat-value {
+            font-size: 44px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .summary-stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .roadmap-cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .roadmap-cta-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), #2563EB);
+            color: white;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+        .roadmap-cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+        }
+        .roadmap-cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-primary);
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .roadmap-cta-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-3px);
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+        .particle:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+            top: -200px;
+            left: -150px;
+            animation: float 15s ease-in-out infinite;
+        }
+        .particle:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            top: 30%;
+            right: -100px;
+            animation: float 18s ease-in-out infinite reverse;
+        }
+        .particle:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+            bottom: 10%;
+            left: 20%;
+            animation: float 12s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(40px,-50px) scale(1.1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .roadmap-header h1 {
+                font-size: 32px;
+            }
+            .roadmap-header p {
+                font-size: 16px;
+            }
+            .timeline-line {
+                left: 40px;
+            }
+            .stage-card {
+                margin-left: 60px;
+            }
+            .stage-card::before {
+                left: -36px;
+                width: 12px;
+                height: 12px;
+            }
+            .stage-inner {
+                padding: 20px;
+            }
+            .stage-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .stage-icon-wrap {
+                width: 52px;
+                height: 52px;
+            }
+            .stage-icon-wrap iconify-icon {
+                font-size: 26px;
+            }
+            .stage-title {
+                font-size: 18px;
+            }
+            .stage-tasks {
+                grid-template-columns: 1fr;
+            }
+            .summary-stats {
+                gap: 32px;
+            }
+            .summary-stat-value {
+                font-size: 36px;
+            }
+            .roadmap-cta-buttons {
+                flex-direction: column;
+            }
+            .roadmap-cta-primary,
+            .roadmap-cta-secondary {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <main class="roadmap-container">
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Chuyển đổi giao diện sáng/tối" title="Chuyển đổi giao diện" style="position: absolute; top: 20px; right: 20px;">
+            <iconify-icon icon="lucide:sun" class="theme-icon-light"></iconify-icon>
+            <iconify-icon icon="lucide:moon" class="theme-icon-dark"></iconify-icon>
+        </button>
+
+        <!-- Back Link -->
+        <a href="index.html" class="back-link">
+            <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+            Quay về trang chủ
+        </a>
+
+        <!-- Header -->
+        <div class="roadmap-header">
+            <div class="roadmap-header-badge">
+                <iconify-icon icon="lucide:compass"></iconify-icon>
+                Lộ trình TSA 2027
+            </div>
+            <h1>Chinh phục TSA 2027</h1>
+            <p>Từ nền tảng kiến thức → Luyện đề chuyên sâu → Bứt phá điểm số</p>
+            <div class="roadmap-meta-row">
+                <div class="roadmap-meta-item">
+                    <iconify-icon icon="lucide:book-open"></iconify-icon>
+                    13 Chuyên đề
+                </div>
+                <div class="roadmap-meta-item">
+                    <iconify-icon icon="lucide:file-question"></iconify-icon>
+                    30+ Đề luyện
+                </div>
+                <div class="roadmap-meta-item">
+                    <iconify-icon icon="lucide:video"></iconify-icon>
+                    Video chữa chi tiết
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="roadmap-timeline">
+            <div class="timeline-line">
+                <div class="timeline-line-fill" id="timelineFill"></div>
+            </div>
+
+            <!-- Stage 1 -->
+            <div class="stage-card" data-stage="1" style="--stage-color: #10B981;">
+                <div class="stage-inner">
+                    <div class="stage-top">
+                        <div class="stage-icon-wrap">
+                            <iconify-icon icon="lucide:rocket"></iconify-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-number">Chặng 1</div>
+                            <h3 class="stage-title">Nền tảng kiến thức</h3>
+                            <div class="stage-date">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon>
+                                15/07/2026
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stage-tasks">
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Hoàn thành 13 chuyên đề Toán TSA</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Mỗi 3 ngày luyện 1 đề</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Xây dựng tư duy giải nhanh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2 -->
+            <div class="stage-card" data-stage="2" style="--stage-color: #3B82F6;">
+                <div class="stage-inner">
+                    <div class="stage-top">
+                        <div class="stage-icon-wrap">
+                            <iconify-icon icon="lucide:book"></iconify-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-number">Chặng 2</div>
+                            <h3 class="stage-title">Tăng tốc điểm số</h3>
+                            <div class="stage-date">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon>
+                                24/08/2026
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stage-tasks">
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>12 đề TSA mục tiêu 30 điểm Toán</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Mỗi tuần 1 đề</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Phân tích lỗi sai</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3 -->
+            <div class="stage-card" data-stage="3" style="--stage-color: #F59E0B;">
+                <div class="stage-inner">
+                    <div class="stage-top">
+                        <div class="stage-icon-wrap">
+                            <iconify-icon icon="lucide:flame"></iconify-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-number">Chặng 3</div>
+                            <h3 class="stage-title">Nâng cao năng lực</h3>
+                            <div class="stage-date">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon>
+                                01/12/2026
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stage-tasks">
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>5 đề nâng cao</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Các dạng khó TSA</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Hoàn thiện kỹ năng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 4 -->
+            <div class="stage-card" data-stage="4" style="--stage-color: #8B5CF6;">
+                <div class="stage-inner">
+                    <div class="stage-top">
+                        <div class="stage-icon-wrap">
+                            <iconify-icon icon="lucide:trophy"></iconify-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-number">Chặng 4</div>
+                            <h3 class="stage-title">Về đích TSA</h3>
+                            <div class="stage-date">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon>
+                                01/01/2027
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stage-tasks">
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>5 đề mô phỏng kỳ thi thật</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Căn chỉnh chiến thuật làm bài</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 5 -->
+            <div class="stage-card" data-stage="5" style="--stage-color: #EC4899;">
+                <div class="stage-inner">
+                    <div class="stage-top">
+                        <div class="stage-icon-wrap">
+                            <iconify-icon icon="lucide:crown"></iconify-icon>
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-number">Chặng 5</div>
+                            <h3 class="stage-title">Bứt phá cuối cùng</h3>
+                            <div class="stage-date">
+                                <iconify-icon icon="lucide:calendar"></iconify-icon>
+                                01/02/2027
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stage-tasks">
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>5 đề cơ bản + 3 đề nâng cao</span>
+                        </div>
+                        <div class="stage-task">
+                            <iconify-icon icon="lucide:check-circle"></iconify-icon>
+                            <span>Ôn tập trước kỳ thi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="roadmap-summary">
+            <div class="summary-target">
+                <div class="summary-icon">
+                    <iconify-icon icon="lucide:flag"></iconify-icon>
+                </div>
+                <div class="summary-target-text">
+                    <span>Hoàn thành khóa học dự kiến:</span>
+                    <strong>10/05/2027</strong>
+                </div>
+            </div>
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-stat-value">13</div>
+                    <div class="summary-stat-label">Chuyên đề</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value">30+</div>
+                    <div class="summary-stat-label">Đề luyện TSA</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value">3x</div>
+                    <div class="summary-stat-label">Lần làm lại mỗi đề</div>
+                </div>
+            </div>
+            <div class="roadmap-cta-buttons">
+                <a href="phong-luyen-tsa/index.html" class="roadmap-cta-primary">
+                    <iconify-icon icon="lucide:play"></iconify-icon>
+                    Bắt đầu luyện tập
+                </a>
+                <a href="account/dang-ky.html" class="roadmap-cta-secondary">
+                    <iconify-icon icon="lucide:user-plus"></iconify-icon>
+                    Đăng ký học ngay
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Scroll animation for timeline
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.stage-card');
+            const timelineFill = document.getElementById('timelineFill');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        const stage = parseInt(card.dataset.stage);
+                        card.classList.add('visible');
+
+                        // Update timeline progress
+                        if (timelineFill) {
+                            timelineFill.style.height = (stage / 5) * 100 + '%';
+                        }
+
+                        // Glow effect
+                        card.classList.add('active');
+                        setTimeout(() => card.classList.remove('active'), 2000);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            cards.forEach(card => observer.observe(card));
+        });
+    </script>
+</body>
+</html>

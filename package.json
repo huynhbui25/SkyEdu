@@ -1,0 +1,33 @@
+{
+  "name": "sky-edu-tsa",
+  "version": "1.0.0",
+  "description": "Nền tảng luyện thi TSA/HSA — SKY EDU. Hỗ trợ 12 dạng câu hỏi, Firebase realtime, gamification, admin panel, dark mode, PWA.",
+  "main": "index.html",
+  "homepage": "https://yourusername.github.io/tsa-sky-main",
+  "scripts": {
+    "start": "node start-server.js",
+    "dev": "node start-server.js",
+    "test": "echo \"Chưa có test\" && exit 0"
+  },
+  "keywords": [
+    "tsa",
+    "hsa",
+    "luyện thi",
+    "giáo dục",
+    "firebase",
+    "vietnam",
+    "edtech"
+  ],
+  "author": "SKY EDU Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tsa-sky-main.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/tsa-sky-main/issues"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

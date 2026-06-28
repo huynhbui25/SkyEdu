@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả bài thi HSA - SKY EDU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        :root {
+            --navy: #051A39;
+            --primary-blue: #2196F3;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #F44336;
+            --gray-100: #F5F5F5;
+            --gray-200: #EEEEEE;
+            --gray-300: #E0E0E0;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            /* HSA Purple Theme */
+            --hsa-primary: #7C3AED;
+            --hsa-secondary: #A78BFA;
+            --hsa-gradient: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #F3E8FF 0%, #FAF5FF 100%);
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        .result-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .result-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: var(--hsa-gradient);
+            color: white;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .result-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        /* Score Card */
+        .score-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .score-main {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F3E8FF 0%, #FAF5FF 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            border: 6px solid var(--hsa-primary);
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .score-status {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .score-message {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+        }
+
+        .stat-icon.correct {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .stat-icon.wrong {
+            background: #FFEBEE;
+            color: var(--error);
+        }
+
+        .stat-icon.skipped {
+            background: #FFF3E0;
+            color: var(--warning);
+        }
+
+        .stat-icon.time {
+            background: #F3E8FF;
+            color: var(--hsa-primary);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Answer Review */
+        .review-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .review-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            background: var(--gray-100);
+        }
+
+        .filter-tab.active {
+            background: var(--hsa-primary);
+            color: white;
+            border-color: var(--hsa-primary);
+        }
+
+        .question-review {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .question-review:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .question-review-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .question-review-number.correct {
+            background: var(--success);
+            color: white;
+        }
+
+        .question-review-number.wrong {
+            background: var(--error);
+            color: white;
+        }
+
+        .question-review-number.skipped {
+            background: var(--warning);
+            color: white;
+        }
+
+        .question-review-text {
+            flex: 1;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .question-review-status {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
+        .question-review-status.correct {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+
+        .question-review-status.wrong {
+            background: #FFEBEE;
+            color: var(--error);
+        }
+
+        .question-review-status.skipped {
+            background: #FFF3E0;
+            color: var(--warning);
+        }
+
+        .question-answers {
+            display: flex;
+            gap: 24px;
+            margin-left: 44px;
+            flex-wrap: wrap;
+        }
+
+        .answer-detail {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .answer-detail strong {
+            color: var(--text-main);
+        }
+
+        .answer-correct {
+            color: var(--success);
+        }
+
+        .answer-wrong {
+            color: var(--error);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--hsa-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--navy);
+            border: 2px solid var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--hsa-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-title {
+                font-size: 24px;
+            }
+
+            .score-circle {
+                width: 140px;
+                height: 140px;
+            }
+
+            .score-value {
+                font-size: 36px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <!-- Header -->
+        <div class="result-header">
+            <div class="result-badge">
+                <iconify-icon icon="lucide:award"></iconify-icon>
+                Kết quả bài thi HSA
+            </div>
+            <h1 class="result-title" id="examName">Đang tải kết quả...</h1>
+            <p class="result-subtitle" id="completedAt">Hoàn thành lúc 14:30 - 14/06/2026</p>
+        </div>
+
+        <!-- Score Card -->
+        <div class="score-card">
+            <div class="score-main">
+                <div class="score-circle">
+                    <div class="score-value" id="scoreValue">8.5</div>
+                    <div class="score-label">điểm</div>
+                </div>
+                <div class="score-status" id="scoreStatus">Xuất sắc!</div>
+                <div class="score-message" id="scoreMessage">Bạn đã làm rất tốt bài thi này</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon correct">
+                        <iconify-icon icon="lucide:check"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="correctCount">34</div>
+                    <div class="stat-label">Câu đúng</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon wrong">
+                        <iconify-icon icon="lucide:x"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="wrongCount">5</div>
+                    <div class="stat-label">Câu sai</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon skipped">
+                        <iconify-icon icon="lucide:minus"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="skippedCount">1</div>
+                    <div class="stat-label">Câu bỏ qua</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon time">
+                        <iconify-icon icon="lucide:clock"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="timeSpent">75:23</div>
+                    <div class="stat-label">Thời gian</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer Review -->
+        <div class="review-section">
+            <div class="review-header">
+                <h2 class="review-title">Chi tiết đáp án</h2>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">Tất cả</button>
+                    <button class="filter-tab" data-filter="correct">Đúng</button>
+                    <button class="filter-tab" data-filter="wrong">Sai</button>
+                    <button class="filter-tab" data-filter="skipped">Bỏ qua</button>
+                </div>
+            </div>
+
+            <div id="answerReview">
+                <!-- Answer details will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-action btn-secondary" onclick="goBack()">
+                <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+                Quay lại
+            </button>
+            <button class="btn-action btn-primary" onclick="retryExam()">
+                <iconify-icon icon="lucide:rotate-ccw"></iconify-icon>
+                Làm lại
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============================
+        // RESULT DATA
+        // ============================
+        let resultData = null;
+        let currentFilter = 'all';
+
+        function loadResult() {
+            // Try to load HSA result first
+            let resultStr = localStorage.getItem('examResultHSA');
+            let answersKey = 'examProgressHSA';
+            
+            if (!resultStr) {
+                resultStr = localStorage.getItem('examResult');
+                answersKey = 'examProgress';
+            }
+
+            if (!resultStr) {
+                // Không có kết quả — quay lại trang luyện thi
+                alert('⚠️ Chưa có kết quả thi. Vui lòng làm bài trước.');
+                window.location.href = 'index.html';
+                return;
+            } else {
+                resultData = JSON.parse(resultStr);
+            }
+
+            renderResult();
+        }
+
+        function renderResult() {
+            if (!resultData) return;
+
+            // Update header
+            document.getElementById('examName').textContent = resultData.examName || 'Đề thi thử HSA';
+            
+            const completedDate = resultData.completedAt 
+                ? new Date(resultData.completedAt) 
+                : new Date();
+            document.getElementById('completedAt').textContent = 
+                `Hoàn thành lúc ${completedDate.toLocaleTimeString('vi-VN')} - ${completedDate.toLocaleDateString('vi-VN')}`;
+
+            // Update score
+            document.getElementById('scoreValue').textContent = resultData.score?.toFixed(1) || '0.0';
+
+            // Update score status
+            const score = resultData.score || 0;
+            let statusText, statusMessage;
+
+            if (score >= 9) {
+                statusText = 'Xuất sắc!';
+                statusMessage = 'Bạn đã làm bài thi HSA một cách xuất sắc!';
+            } else if (score >= 8) {
+                statusText = 'Giỏi';
+                statusMessage = 'Bạn đã làm rất tốt bài thi HSA này!';
+            } else if (score >= 7) {
+                statusText = 'Khá';
+                statusMessage = 'Bài thi của bạn khá tốt, cố gắng hơn nữa nhé!';
+            } else if (score >= 5) {
+                statusText = 'Trung bình';
+                statusMessage = 'Bạn cần ôn luyện thêm để cải thiện điểm HSA.';
+            } else {
+                statusText = 'Cần cố gắng';
+                statusMessage = 'Đừng nản chí, hãy tiếp tục luyện tập HSA nhé!';
+            }
+
+            document.getElementById('scoreStatus').textContent = statusText;
+            document.getElementById('scoreMessage').textContent = statusMessage;
+
+            // Update stats
+            const correct = resultData.correct || 0;
+            const total = resultData.total || 40;
+            const answered = resultData.answered || correct;
+            const wrong = answered - correct;
+            const skipped = total - answered;
+
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('wrongCount').textContent = wrong;
+            document.getElementById('skippedCount').textContent = skipped;
+
+            // Format time
+            const timeSpent = resultData.timeSpent || 0;
+            const minutes = Math.floor(timeSpent / 60);
+            const seconds = timeSpent % 60;
+            document.getElementById('timeSpent').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Render answer review
+            renderAnswerReview(correct, wrong, skipped, total);
+        }
+
+        function renderAnswerReview(correct, wrong, skipped, total) {
+            const container = document.getElementById('answerReview');
+            const answers = resultData.answers || {};
+
+            // Generate sample review items
+            let items = [];
+
+            for (let i = 1; i <= total; i++) {
+                let status, statusText;
+                let userAnswer = answers[`q${i}`] || null;
+                let correctAnswer = resultData.questions?.[i - 1]?.correctAnswer;
+
+                if (!userAnswer) {
+                    status = 'skipped';
+                    statusText = 'Bỏ qua';
+                } else if (userAnswer === correctAnswer) {
+                    status = 'correct';
+                    statusText = 'Đúng';
+                } else {
+                    status = 'wrong';
+                    statusText = 'Sai';
+                }
+
+                items.push({
+                    number: i,
+                    status: status,
+                    statusText: statusText,
+                    userAnswer: userAnswer || '-',
+                    correctAnswer: correctAnswer || 'A'
+                });
+            }
+
+            // Filter items
+            if (currentFilter !== 'all') {
+                items = items.filter(item => item.status === currentFilter);
+            }
+
+            // Render
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <iconify-icon icon="lucide:search" style="font-size: 48px; margin-bottom: 16px;"></iconify-icon>
+                        <p>Không có câu hỏi nào trong danh mục này</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="question-review" data-status="${item.status}">
+                    <div class="question-review-header">
+                        <div class="question-review-number ${item.status}">${item.number}</div>
+                        <div class="question-review-text">Câu ${item.number}</div>
+                        <span class="question-review-status ${item.status}">${item.statusText}</span>
+                    </div>
+                    <div class="question-answers">
+                        <div class="answer-detail">
+                            <strong>Đáp án của bạn:</strong> 
+                            <span class="${item.status === 'correct' ? 'answer-correct' : item.status === 'skipped' ? '' : 'answer-wrong'}">${item.userAnswer}</span>
+                        </div>
+                        ${item.status !== 'skipped' ? `
+                        <div class="answer-detail">
+                            <strong>Đáp án đúng:</strong> 
+                            <span class="answer-correct">${item.correctAnswer}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Setup filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentFilter = tab.dataset.filter;
+                    renderAnswerReview(correct, wrong, skipped, total);
+                });
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function retryExam() {
+            if (confirm('Bạn có muốn làm lại bài thi HSA này không?')) {
+                // Clear progress
+                localStorage.removeItem('examProgress');
+                localStorage.removeItem('examProgressHSA');
+                localStorage.removeItem('examResult');
+                localStorage.removeItem('examResultHSA');
+                
+                // Go to exam
+                window.location.href = 'exam.html';
+            }
+        }
+
+        // Load result on page load
+        window.onload = loadResult;
+    </script>
+
+    <!-- SKY EDU Hooks: tự động đẩy dữ liệu sang Dashboard/Leaderboard/Rank -->
+    <script src="../assets/js/core/sky-store.js"></script>
+    <script src="../assets/js/core/rank-system.js"></script>
+    <script src="../assets/js/core/achievement-engine.js"></script>
+    <script src="../assets/js/core/learning-stats.js"></script>
+    <script src="../assets/js/hooks/exam-result-bridge.js"></script>
+</body>
+</html>

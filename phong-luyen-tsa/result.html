@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả bài thi - SKY EDU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        :root {
+            --navy: #051A39;
+            --primary-blue: #2563EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #F8FAFC;
+            min-height: 100vh;
+            padding: 40px 24px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle, #0F172A 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .deco-circle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .deco-1 {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+        }
+        .deco-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+        }
+
+        .result-container {
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .result-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: white;
+            color: var(--text-muted);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .result-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .score-card {
+            background: white;
+            border-radius: 20px;
+            padding: 36px 40px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-100);
+        }
+
+        .score-main {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--score-color, var(--primary-blue)) calc(var(--score-percent, 0) * 1%),
+                var(--gray-200) calc(var(--score-percent, 0) * 1%)
+            );
+            mask: radial-gradient(transparent 55%, black 56%);
+            -webkit-mask: radial-gradient(transparent 55%, black 56%);
+        }
+
+        .score-inner {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-value {
+            font-size: 44px;
+            font-weight: 800;
+            color: var(--score-color, var(--primary-blue));
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .score-status {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .score-message {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--gray-100);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+        }
+
+        .stat-icon.correct {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            color: #059669;
+        }
+
+        .stat-icon.wrong {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            color: #DC2626;
+        }
+
+        .stat-icon.skipped {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #D97706;
+        }
+
+        .stat-icon.time {
+            background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+            color: #2563EB;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .review-section {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-100);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .review-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--gray-100);
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .filter-tab {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            color: var(--navy);
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: var(--navy);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .question-review {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .question-review:hover {
+            border-color: var(--gray-300);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .question-review:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .question-review-num {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .q-num-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .q-num-badge.correct {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .q-num-badge.wrong {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .q-num-badge.skipped {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .question-review-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .question-review-status.correct {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .question-review-status.wrong {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .question-review-status.skipped {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .question-content-preview {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .question-answers {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .answer-detail {
+            font-size: 13px;
+            padding: 8px 14px;
+            background: var(--gray-100);
+            border-radius: 8px;
+        }
+
+        .answer-detail strong {
+            color: var(--text-main);
+        }
+
+        .answer-correct {
+            color: #059669;
+        }
+
+        .answer-wrong {
+            color: #DC2626;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-action.btn-secondary {
+            background: white;
+            color: var(--navy);
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-action.btn-secondary:hover {
+            border-color: var(--gray-300);
+        }
+
+        .btn-action.btn-primary {
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-action.btn-primary:hover {
+            background: #1D4ED8;
+        }
+
+        .btn-action.btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--navy);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 24px 16px;
+            }
+
+            .score-card {
+                padding: 28px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .review-section {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="deco-circle deco-1"></div>
+    <div class="deco-circle deco-2"></div>
+
+    <div class="result-container">
+        <div class="result-header">
+            <div class="result-badge">
+                <iconify-icon icon="lucide:award"></iconify-icon>
+                Kết quả bài thi
+            </div>
+            <h1 class="result-title" id="examName">Đang tải kết quả...</h1>
+            <p class="result-subtitle" id="completedAt">Hoàn thành lúc 14:30 - 14/06/2026</p>
+        </div>
+
+        <div class="score-card">
+            <div class="score-main">
+                <div class="score-circle" id="scoreCircle" style="--score-percent: 0; --score-color: #2563EB;">
+                    <div class="score-inner">
+                        <div class="score-value" id="scoreValue">8.5</div>
+                        <div class="score-label">điểm</div>
+                    </div>
+                </div>
+                <div class="score-status" id="scoreStatus">Xuất sắc!</div>
+                <div class="score-message" id="scoreMessage">Bạn đã làm rất tốt bài thi này</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon correct">
+                        <iconify-icon icon="lucide:check"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="correctCount">34</div>
+                    <div class="stat-label">Câu đúng</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon wrong">
+                        <iconify-icon icon="lucide:x"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="wrongCount">5</div>
+                    <div class="stat-label">Câu sai</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon skipped">
+                        <iconify-icon icon="lucide:minus"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="skippedCount">1</div>
+                    <div class="stat-label">Câu bỏ qua</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon time">
+                        <iconify-icon icon="lucide:clock"></iconify-icon>
+                    </div>
+                    <div class="stat-value" id="timeSpent">75:23</div>
+                    <div class="stat-label">Thời gian</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-section">
+            <div class="review-header">
+                <h2 class="review-title">Chi tiết đáp án</h2>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">Tất cả</button>
+                    <button class="filter-tab" data-filter="correct">Đúng</button>
+                    <button class="filter-tab" data-filter="wrong">Sai</button>
+                    <button class="filter-tab" data-filter="skipped">Bỏ qua</button>
+                </div>
+            </div>
+
+            <div id="answerReview"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-action btn-secondary" onclick="goBack()">
+                <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+                Quay lại
+            </button>
+            <button class="btn-action btn-primary" onclick="retryExam()">
+                <iconify-icon icon="lucide:rotate-ccw"></iconify-icon>
+                Làm lại
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let resultData = null;
+        let currentFilter = 'all';
+
+        function loadResult() {
+            let resultStr = localStorage.getItem('examResult');
+            if (!resultStr) {
+                resultStr = localStorage.getItem('hsaResult');
+            }
+            
+            if (!resultStr) {
+                document.querySelector('.result-container').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Không tìm thấy kết quả thi</p>
+                        <button class="btn-action btn-primary" onclick="goBack()" style="margin-top: 20px;">
+                            Quay lại phòng luyện
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                resultData = JSON.parse(resultStr);
+                displayResult(resultData);
+            } catch (e) {
+                console.error('Error parsing result:', e);
+                document.querySelector('.result-container').innerHTML = '<p>Đã xảy ra lỗi khi tải kết quả.</p>';
+            }
+        }
+
+        function displayResult(data) {
+            document.getElementById('examName').textContent = data.examName || 'Phòng luyện TSA';
+            
+            const completedAt = new Date(data.completedAt);
+            const timeStr = completedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = completedAt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('completedAt').textContent = `Hoàn thành lúc ${timeStr} - ${dateStr}`;
+
+            const score = data.score || 0;
+            const scorePercent = Math.round(score * 10);
+            document.getElementById('scoreValue').textContent = score.toFixed(1);
+            
+            let scoreColor = '#2563EB';
+            if (score >= 8) scoreColor = '#10B981';
+            else if (score >= 5) scoreColor = '#F59E0B';
+            else scoreColor = '#EF4444';
+            
+            const circle = document.getElementById('scoreCircle');
+            circle.style.setProperty('--score-percent', scorePercent);
+            circle.style.setProperty('--score-color', scoreColor);
+            document.getElementById('scoreValue').style.color = scoreColor;
+
+            let status = '';
+            let message = '';
+            if (score >= 9) { status = 'Xuất sắc!'; message = 'Bạn đã làm bài thi xuất sắc!'; }
+            else if (score >= 8) { status = 'Giỏi!'; message = 'Bạn đã làm rất tốt bài thi này!'; }
+            else if (score >= 7) { status = 'Khá!'; message = 'Bạn đã làm bài khá tốt. Cố gắng hơn nữa nhé!'; }
+            else if (score >= 5) { status = 'Trung bình'; message = 'Cần ôn tập thêm để cải thiện điểm số.'; }
+            else { status = 'Cần cố gắng'; message = 'Hãy ôn lại bài và thử lại nhé!'; }
+            
+            document.getElementById('scoreStatus').textContent = status;
+            document.getElementById('scoreMessage').textContent = message;
+
+            const correct = data.correct || 0;
+            const wrong = data.wrong || 0;
+            const skipped = (data.total || 0) - (data.answered || 0);
+            
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('wrongCount').textContent = wrong;
+            document.getElementById('skippedCount').textContent = skipped;
+            
+            const timeUsed = data.timeSpent || data.timeUsed || 0;
+            const minutes = Math.floor(timeUsed / 60);
+            const seconds = timeUsed % 60;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            renderAnswerReview(data);
+        }
+
+        function renderAnswerReview(data) {
+            const container = document.getElementById('answerReview');
+            if (!data.questions || !data.answers) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Không có dữ liệu chi tiết.</p>';
+                return;
+            }
+
+            const questions = data.questions;
+            const answers = data.answers;
+
+            let html = '';
+            
+            questions.forEach((q, i) => {
+                const key = `q${i + 1}`;
+                const userAnswer = answers[key];
+                let status = 'skipped';
+                
+                if (userAnswer === undefined || userAnswer === null || userAnswer === '') {
+                    status = 'skipped';
+                } else {
+                    const correctAns = q.correctAnswer;
+                    if (Array.isArray(userAnswer) && Array.isArray(correctAns)) {
+                        status = JSON.stringify([...userAnswer].sort()) === JSON.stringify([...correctAns].sort()) ? 'correct' : 'wrong';
+                    } else if (userAnswer === correctAns || userAnswer === q.options?.indexOf(correctAns)) {
+                        status = 'correct';
+                    } else {
+                        status = 'wrong';
+                    }
+                }
+
+                const content = q.content ? q.content.replace(/<[^>]*>/g, '').substring(0, 80) : 'Câu hỏi ' + (i + 1);
+                
+                let userAnswerText = 'Chưa trả lời';
+                let correctAnswerText = '';
+
+                if (q.options && Array.isArray(q.options)) {
+                    if (userAnswer !== undefined && userAnswer !== null && userAnswer !== '') {
+                        if (typeof userAnswer === 'number' && q.options[userAnswer]) {
+                            userAnswerText = q.options[userAnswer];
+                        } else if (q.options.includes(userAnswer)) {
+                            userAnswerText = userAnswer;
+                        }
+                    }
+                    correctAnswerText = q.options[q.correctAnswer] || q.correctAnswer;
+                } else if (userAnswer !== undefined && userAnswer !== null && userAnswer !== '') {
+                    userAnswerText = String(userAnswer);
+                }
+
+                html += `
+                    <div class="question-review" data-status="${status}">
+                        <div class="question-review-header">
+                            <div class="question-review-num">
+                                <div class="q-num-badge ${status}">${i + 1}</div>
+                            </div>
+                            <div class="question-review-status ${status}">
+                                ${status === 'correct' ? 'Đúng' : status === 'wrong' ? 'Sai' : 'Bỏ qua'}
+                            </div>
+                        </div>
+                        <div class="question-content-preview">${content}${q.content && q.content.length > 80 ? '...' : ''}</div>
+                        <div class="question-answers">
+                            <div class="answer-detail">
+                                <strong>Đáp án của bạn:</strong> 
+                                <span class="${status === 'correct' ? 'answer-correct' : status === 'wrong' ? 'answer-wrong' : ''}">${userAnswerText}</span>
+                            </div>
+                            ${status !== 'correct' && correctAnswerText ? `
+                                <div class="answer-detail">
+                                    <strong>Đáp án đúng:</strong>
+                                    <span class="answer-correct">${correctAnswerText}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    currentFilter = tab.dataset.filter;
+                    document.querySelectorAll('.question-review').forEach(review => {
+                        if (currentFilter === 'all' || review.dataset.status === currentFilter) {
+                            review.style.display = '';
+                        } else {
+                            review.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function retryExam() {
+            if (resultData && resultData.examId) {
+                window.location.href = `exam.html?id=${resultData.examId}`;
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadResult();
+            setupFilters();
+        });
+    </script>
+</body>
+</html>

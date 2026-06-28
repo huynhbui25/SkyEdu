@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng xếp hạng - SKY EDU</title>
+    <meta name="theme-color" content="#050B1A">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='45' fill='%2300BFFF'/%3E%3Cpath d='M30 150C60 150 90 130 120 90C135 70 150 45 165 15C135 30 105 45 90 60C60 90 30 120 30 150Z' fill='%233B82F6'/%3E%3Cpath d='M50 150C70 150 90 135 105 115C115 100 125 80 135 60C110 70 90 80 75 95C50 120 50 135 50 150Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="assets/css/premium-style.css">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <style>
+        :root { --page-bg: #070D1F; }
+        .page-bg { position: fixed; inset: 0; z-index: 0; background: var(--page-bg); }
+        .bg-gradient { position: fixed; top: -50%; left: 50%; transform: translateX(-50%); width: 150%; height: 100%; background: radial-gradient(ellipse at center top, rgba(0, 212, 255, 0.08) 0%, rgba(59, 130, 246, 0.05) 30%, transparent 70%); pointer-events: none; z-index: 0; }
+        .bg-grid { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+        .floating-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 20s ease-in-out infinite; }
+        .orb-1 { width: 500px; height: 500px; background: rgba(0, 212, 255, 0.08); top: 5%; left: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: rgba(124, 77, 255, 0.06); bottom: 10%; right: -5%; animation-delay: -7s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(40px, -40px) scale(1.05); } 50% { transform: translate(-30px, 30px) scale(0.95); } 75% { transform: translate(30px, 40px) scale(1.02); } }
+
+        .page-wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .page-content { padding-top: 100px; padding-bottom: 60px; flex: 1; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+        .section-header { text-align: center; margin-bottom: 48px; animation: fadeInUp 0.8s ease forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .section-badge { display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 50px; font-size: 12px; font-weight: 700; color: #00D4FF; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .section-badge iconify-icon { font-size: 16px; }
+        .section-title { font-size: 42px; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: -1px; }
+        .section-title-gradient { background: linear-gradient(135deg, #00D4FF, #3B82F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section-desc { font-size: 17px; color: #94A3B8; max-width: 550px; margin: 0 auto; }
+
+        .leaderboard-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 32px; animation: fadeInUp 0.8s ease forwards; animation-delay: 0.2s; opacity: 0; }
+
+        .leaderboard-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .leaderboard-tab { padding: 12px 24px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; font-size: 14px; font-weight: 600; color: #94A3B8; cursor: pointer; transition: all 0.3s ease; }
+        .leaderboard-tab:hover { border-color: rgba(0, 212, 255, 0.3); color: #fff; }
+        .leaderboard-tab.active { background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(59, 130, 246, 0.15)); border-color: rgba(0, 212, 255, 0.4); color: #fff; }
+
+        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; }
+
+        .leaderboard-item { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; transition: all 0.3s ease; }
+        .leaderboard-item:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(0, 212, 255, 0.2); transform: translateX(8px); }
+        .leaderboard-item.top-1 { background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05)); border-color: rgba(255, 215, 0, 0.3); }
+        .leaderboard-item.top-2 { background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(169, 169, 169, 0.05)); border-color: rgba(192, 192, 192, 0.3); }
+        .leaderboard-item.top-3 { background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(184, 115, 51, 0.05)); border-color: rgba(205, 127, 50, 0.3); }
+
+        .leaderboard-rank { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; background: rgba(255, 255, 255, 0.08); color: #94A3B8; }
+        .leaderboard-item.top-1 .leaderboard-rank { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .leaderboard-item.top-2 .leaderboard-rank { background: linear-gradient(135deg, #C0C0C0, #A9A9A9); color: #000; }
+        .leaderboard-item.top-3 .leaderboard-rank { background: linear-gradient(135deg, #CD7F32, #B87333); color: #fff; }
+
+        .leaderboard-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #00D4FF, #3B82F6); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+        .leaderboard-info { flex: 1; min-width: 0; }
+        .leaderboard-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .leaderboard-meta { font-size: 12px; color: #64748B; display: flex; gap: 12px; }
+        .leaderboard-meta span { display: flex; align-items: center; gap: 4px; }
+
+        .leaderboard-score { text-align: right; flex-shrink: 0; }
+        .leaderboard-score-value { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #00D4FF, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .leaderboard-score-label { font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        @media (max-width: 768px) {
+            .section-title { font-size: 32px; }
+            .leaderboard-item { padding: 12px 16px; gap: 12px; }
+            .leaderboard-avatar { width: 40px; height: 40px; font-size: 14px; }
+            .leaderboard-rank { width: 32px; height: 32px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-bg"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+
+    <div class="page-wrapper">
+        <header class="navbar" id="navbar">
+            <div class="navbar-content">
+                <a href="index.html" class="logo-wrap">
+                    <svg width="44" height="44" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 26C12 26 18 22 22 16C24 13 26 9 28 4C23 6 19 8 16 10C10 14 6 20 6 26Z" fill="#38BDF8"/>
+                        <path d="M10 26C14 26 18 23 21 19C22.5 17 24 14 25 11C21 12 18 13.5 16 15C12 18 10 22 10 26Z" fill="#1677FF"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="logo-title">SKY EDU</span>
+                        <span class="logo-subtitle">Fly Higher • Think Better</span>
+                    </div>
+                </a>
+
+                <nav class="nav-center">
+                    <ul class="nav-links">
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="khoa-hoc-pages/index.html">Khóa học</a></li>
+                        <li><a href="quy-doi-diem.html">Quy đổi điểm</a></li>
+                        <li><a href="phong-luyen-tsa/index.html">Phòng luyện TSA</a></li>
+                        <li><a href="phong-luyen-hsa/index.html">Phòng luyện HSA</a></li>
+                        <li><a href="leaderboard.html" class="active">Bảng xếp hạng</a></li>
+                    </ul>
+                </nav>
+
+                <div class="nav-actions" id="navActions">
+                    <a href="account/dang-nhap.html" class="btn-ghost">Đăng nhập</a>
+                    <a href="account/dang-ky.html" class="btn-primary-sm">Đăng ký</a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <style>
+            .user-dropdown { position: relative; display: inline-block; }
+            .user-dropdown-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; color: #00D4FF; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+            .user-dropdown-btn:hover { background: rgba(0, 212, 255, 0.2); border-color: rgba(0, 212, 255, 0.4); }
+            .user-dropdown-btn iconify-icon { font-size: 18px; transition: transform 0.3s ease; }
+            .user-dropdown.open .user-dropdown-btn iconify-icon:last-child { transform: rotate(180deg); }
+            .user-dropdown-content { display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; min-width: 200px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 8px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); z-index: 1000; animation: dropdownFade 0.2s ease; }
+            @keyframes dropdownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            .user-dropdown.open .user-dropdown-content { display: block; }
+            .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: #E2E8F0; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
+            .dropdown-item:hover { background: rgba(0, 212, 255, 0.15); color: #00D4FF; }
+            .dropdown-item iconify-icon { font-size: 16px; color: #94A3B8; }
+            .dropdown-item:hover iconify-icon { color: #00D4FF; }
+            .dropdown-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 8px 0; }
+            .dropdown-item.logout { color: #EF4444; }
+            .dropdown-item.logout:hover { background: rgba(239, 68, 68, 0.15); }
+            .dropdown-item.logout iconify-icon { color: #EF4444; }
+            .dropdown-item.admin-only { color: #FACC15; }
+            .dropdown-item.admin-only iconify-icon { color: #FACC15; }
+        </style>
+
+        <main class="page-content">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge">
+                        <iconify-icon icon="lucide:trophy"></iconify-icon>
+                        <span>Bảng xếp hạng</span>
+                    </div>
+                    <h1 class="section-title">
+                        <span class="section-title-gradient">Top học viên xuất sắc</span>
+                    </h1>
+                    <p class="section-desc">Cùng nhau thi đua, cùng nhau tiến bộ</p>
+                </div>
+
+                <div class="leaderboard-card">
+                    <div class="leaderboard-tabs">
+                        <button class="leaderboard-tab active" data-filter="all">Toàn thời gian</button>
+                        <button class="leaderboard-tab" data-filter="month">Tháng này</button>
+                        <button class="leaderboard-tab" data-filter="week">Tuần này</button>
+                    </div>
+
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- Data loaded by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="assets/js/leaderboard.js"></script>
+
+    <script>
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.pageYOffset > 50);
+        });
+
+        function updateNavAuthState() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const navActions = document.getElementById('navActions');
+
+            if (currentUser) {
+                const isAdmin = currentUser.role === 'admin' || currentUser.role === 'moderator';
+                navActions.innerHTML = `
+                    <div class="user-dropdown">
+                        <button class="user-dropdown-btn">
+                            <iconify-icon icon="lucide:user"></iconify-icon>
+                            ${currentUser.fullname || currentUser.username}
+                            <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+                        </button>
+                        <div class="user-dropdown-content">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
+                                Dashboard
+                            </a>
+                            <a href="account/tai-khoan.html" class="dropdown-item">
+                                <iconify-icon icon="lucide:user-circle"></iconify-icon>
+                                Hồ sơ cá nhân
+                            </a>
+                            <a href="account/doi-mat-khau.html" class="dropdown-item">
+                                <iconify-icon icon="lucide:key"></iconify-icon>
+                                Đổi mật khẩu
+                            </a>
+                            ${isAdmin ? `
+                            <a href="account/admin.html" class="dropdown-item admin-only">
+                                <iconify-icon icon="lucide:shield"></iconify-icon>
+                                Admin Panel
+                            </a>
+                            ` : ''}
+                            <div class="dropdown-divider"></div>
+                            <a href="#" onclick="logout(); return false;" class="dropdown-item logout">
+                                <iconify-icon icon="lucide:log-out"></iconify-icon>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'account/dang-nhap.html';
+        }
+
+        updateNavAuthState();
+
+        // Dropdown toggle on click
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.user-dropdown');
+            if (!dropdown) return;
+            if (dropdown.contains(e.target)) {
+                dropdown.classList.toggle('open');
+            } else {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                renderLeaderboard(this.dataset.filter);
+            });
+        });
+
+        // Render leaderboard from data
+        function renderLeaderboard(filter = 'all') {
+            const list = document.getElementById('leaderboardList');
+            let data = [];
+
+            if (typeof Leaderboard !== 'undefined') {
+                data = Leaderboard.getLeaderboard();
+            } else {
+                // Fallback localStorage
+                const stored = localStorage.getItem('skyedu_leaderboard');
+                if (stored) {
+                    try { data = JSON.parse(stored); } catch (e) { data = []; }
+                }
+            }
+
+            // Filter by time
+            if (filter === 'month') {
+                data = data.slice(0, 5); // Demo: just show top 5
+            } else if (filter === 'week') {
+                data = data.slice(0, 3); // Demo: just show top 3
+            }
+
+            if (data.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:#64748B;padding:40px;">Chưa có dữ liệu</p>';
+                return;
+            }
+
+            list.innerHTML = data.map((user, index) => {
+                const rank = index + 1;
+                const topClass = rank === 1 ? 'top-1' : rank === 2 ? 'top-2' : rank === 3 ? 'top-3' : '';
+                const firstLetter = (user.displayName || user.username || 'U').charAt(0).toUpperCase();
+                const level = user.level || 1;
+                const streak = user.streak || 0;
+                const xp = (user.xp || 0).toLocaleString('vi-VN');
+
+                return `
+                    <div class="leaderboard-item ${topClass}">
+                        <div class="leaderboard-rank">${rank}</div>
+                        <div class="leaderboard-avatar">${firstLetter}</div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${user.displayName || user.username || 'User'}</div>
+                            <div class="leaderboard-meta">
+                                <span><iconify-icon icon="lucide:zap" style="font-size:12px"></iconify-icon> Level ${level}</span>
+                                <span><iconify-icon icon="lucide:flame" style="font-size:12px"></iconify-icon> ${streak} streak</span>
+                            </div>
+                        </div>
+                        <div class="leaderboard-score">
+                            <div class="leaderboard-score-value">${xp}</div>
+                            <div class="leaderboard-score-label">XP</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize leaderboard module
+            if (typeof Leaderboard !== 'undefined') {
+                Leaderboard.init();
+            }
+            renderLeaderboard('all');
+        });
+
+        // Listen for updates
+        window.addEventListener('leaderboardUpdate', () => {
+            const activeFilter = document.querySelector('.leaderboard-tab.active')?.dataset.filter || 'all';
+            renderLeaderboard(activeFilter);
+        });
+    </script>
+</body>
+</html>
