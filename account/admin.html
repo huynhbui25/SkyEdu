@@ -4335,6 +4335,22 @@ const App = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Kiểm tra đăng nhập trước khi cho vào trang admin
+    const stored = localStorage.getItem('currentUser');
+    if (!stored) {
+        window.location.href = 'dang-nhap.html';
+        return;
+    }
+    try {
+        const user = JSON.parse(stored);
+        if (!user || (user.role !== 'admin' && user.role !== 'moderator')) {
+            window.location.href = 'dang-nhap.html';
+            return;
+        }
+    } catch(e) {
+        window.location.href = 'dang-nhap.html';
+        return;
+    }
     App.init();
 // ✅ [FIX] Sync dữ liệu từ Firebase khi page load
     if (typeof ExamBuilder !== 'undefined' && ExamBuilder.syncFromFirebase) {
