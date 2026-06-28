@@ -4340,21 +4340,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sync dữ liệu từ Firebase về localStorage khi admin.html load
     // Không sync = máy khác không thấy đề, câu hỏi, và danh sách tài khoản
     function syncAllFromFirebase() {
-        // Sync đề thi
-        if (typeof ExamBuilder !== 'undefined' && ExamBuilder.syncFromFirebase) {
-            ExamBuilder.syncFromFirebase().then(() => {
-                App.renderExamList();
-                console.log('[Admin] Đồng bộ đề thi từ Firebase xong');
-            }).catch(err => console.warn('[Admin] Sync đề thi lỗi:', err));
+        window._syncDone = true;
+
+        // Đọc thẳng từ Firebase — cả 2 path exams/ và phongluyen_exams/
+        if (typeof firebase === 'undefined' || !firebase.database) {
+            console.warn('[Admin] Firebase chưa sẵn sàng');
+            return;
         }
 
+        const db = firebase.database();
+
+        // Sync đề thi: đọc cả exams/ và phongluyen_exams/ rồi merge
+        Promise.all([
+            db.ref('exams').once('value').catch(() => null),
+            db.ref('phongluyen_exams').once('value').catch(() => null)
+        ]).then(([snap1, snap2]) => {
+            const merged = new Map();
+            if (snap1 && snap1.val()) Object.values(snap1.val()).forEach(e => merged.set(e.id, e));
+            if (snap2 && snap2.val()) Object.values(snap2.val()).forEach(e => {
+                if (!merged.has(e.id)) merged.set(e.id, e);
+            });
+
+            const allExams = Array.from(merged.values());
+            if (allExams.length > 0) {
+                // Ghi vào localStorage để ExamBuilder.getAll() đọc được
+                localStorage.setItem('sky_exams', JSON.stringify(allExams));
+                localStorage.setItem('exams', JSON.stringify(allExams));
+                console.log('[Admin] Đồng bộ', allExams.length, 'đề từ Firebase xong');
+                App.renderExamList();
+            } else {
+                console.log('[Admin] Firebase không có đề thi nào');
+                App.renderExamList();
+            }
+        }).catch(err => console.warn('[Admin] Sync đề thi lỗi:', err));
+
         // Sync kho câu hỏi
-        if (typeof QuestionBank !== 'undefined' && QuestionBank.syncFromFirebase) {
-            QuestionBank.syncFromFirebase().then(() => {
+        db.ref('questionBank').once('value').then(snap => {
+            if (snap && snap.val()) {
+                const questions = Object.values(snap.val());
+                localStorage.setItem('sky_question_bank', JSON.stringify(questions));
+                console.log('[Admin] Đồng bộ', questions.length, 'câu hỏi từ Firebase xong');
                 App.renderBank();
-                console.log('[Admin] Đồng bộ câu hỏi từ Firebase xong');
-            }).catch(err => console.warn('[Admin] Sync câu hỏi lỗi:', err));
-        }
+            }
+        }).catch(err => console.warn('[Admin] Sync câu hỏi lỗi:', err));
 
         // Load danh sách tài khoản
         if (typeof FirebaseAPI !== 'undefined' && FirebaseAPI.getAllUsers) {
@@ -4413,13 +4441,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </table>`;
                 console.log('[Admin] Đã load', users.length, 'tài khoản');
             }).catch(err => {
-                console.warn('[Admin] Load tài khoản lỗi:', err);
                 const container = document.getElementById('usersList');
-                if (container) container.innerHTML = '<div class="empty-state"><h3>Lỗi tải danh sách tài khoản</h3><p>Kiểm tra Firebase Rules</p></div>';
+                if (container) container.innerHTML = '<div class="empty-state"><h3>Lỗi tải danh sách</h3><p>Kiểm tra Firebase Rules</p></div>';
             });
         }
     }
-
     // Chờ Firebase sẵn sàng rồi mới sync
     if (window.firebaseInitialized) {
         syncAllFromFirebase();
