@@ -11,18 +11,12 @@
  *
  * Lấy thông tin tại: Firebase Console > Project Settings > General > Your apps
  */
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDD0TO5ZNkZI6RyiIZp5GyyxB947aQ6XSo",
   authDomain: "skyedu-b80a1.firebaseapp.com",
+  databaseURL: "https://skyedu-b80a1-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "skyedu-b80a1",
   storageBucket: "skyedu-b80a1.firebasestorage.app",
   messagingSenderId: "173791675462",
@@ -32,13 +26,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 // Allowed domains cho security check.
 // Thêm domain hosting thật của bạn vào đây.
 const ALLOWED_DOMAINS = [
     'sky-edu-8be67.web.app',
     'sky-edu-8be67.firebaseapp.com',
+    'skyedu-b80a1.web.app',
+    'skyedu-b80a1.firebaseapp.com',
+    'sky-edu.vercel.app',
     'huynhbui25.github.io',  // GitHub Pages
     'localhost',
     '127.0.0.1',
