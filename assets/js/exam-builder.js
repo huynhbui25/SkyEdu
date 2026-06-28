@@ -129,18 +129,23 @@
     }
 
     function _loadFromFirebase() {
-        if (!_isFirebaseReady()) return Promise.resolve([]);
-        const db = _fb();
-        return db.ref(FIREBASE_PATH).once('value')
-            .then(snap => {
-                const data = snap.val() || {};
-                return Object.values(data);
-            })
-            .catch(err => {
-                console.warn('[ExamBuilder] Firebase load error:', err);
-                return [];
-            });
-    }
+    if (!_isFirebaseReady()) return Promise.resolve([]);
+    const db = _fb();
+    return Promise.all([
+        db.ref('exams').once('value').catch(() => null),
+        db.ref('phongluyen_exams').once('value').catch(() => null)
+    ]).then(([snap1, snap2]) => {
+        const merged = new Map();
+        if (snap1 && snap1.val()) Object.values(snap1.val()).forEach(e => merged.set(e.id, e));
+        if (snap2 && snap2.val()) Object.values(snap2.val()).forEach(e => {
+            if (!merged.has(e.id)) merged.set(e.id, e);
+        });
+        return Array.from(merged.values());
+    }).catch(err => {
+        console.warn('[ExamBuilder] Firebase load error:', err);
+        return [];
+    });
+}
 
     /* ================================================================
        UTILS
