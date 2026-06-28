@@ -4458,18 +4458,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    // Chờ Firebase sẵn sàng rồi mới sync
-    if (window.firebaseInitialized) {
+// Chờ Firebase sẵn sàng rồi mới sync
+    function waitAndSync() {
+        var tries = 0;
+        var iv = setInterval(function () {
+            tries++;
+            if (typeof firebase !== 'undefined' && firebase.database
+                && typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
+                clearInterval(iv);
+                syncAllFromFirebase();
+            }
+            if (tries > 40) clearInterval(iv); // timeout 20 giây
+        }, 500);
+    }
+
+    if (typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
         syncAllFromFirebase();
     } else {
-        window.addEventListener('firebaseReady', syncAllFromFirebase);
-        // Fallback: thử lại sau 3 giây nếu event không fire
-        setTimeout(() => {
-            if (!window._syncDone) syncAllFromFirebase();
-        }, 3000);
+        window.addEventListener('firebaseReady', function () {
+            setTimeout(syncAllFromFirebase, 200); // nhỏ delay cho chắc
+        });
+        waitAndSync(); // polling fallback
     }
 });
-
 // Hàm khóa/mở khóa tài khoản
 async function toggleBan(userId, banned) {
     if (!confirm(banned ? 'Khóa tài khoản này?' : 'Mở khóa tài khoản này?')) return;
@@ -4498,27 +4509,8 @@ window.App = App;
 </script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
-// Initialize Lucide icons after DOM load and App init
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
-});
-// Auto-sync câu hỏi từ Firebase khi trang admin load
-window.addEventListener('load', function () {
-    var waitFirebase = setInterval(function () {
-        if (typeof QuestionBank !== 'undefined' && typeof firebase !== 'undefined'
-            && typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
-            clearInterval(waitFirebase);
-            QuestionBank.syncFromFirebase().then(function () {
-                console.log('[Admin] Đã sync câu hỏi từ Firebase thành công');
-                // Nếu trang đang hiển thị danh sách câu hỏi, reload lại UI
-                if (typeof App !== 'undefined' && App.refreshCurrentPage) {
-                    App.refreshCurrentPage();
-                }
-            });
-        }
-    }, 500);
-    // Timeout 10 giây
-    setTimeout(function () { clearInterval(waitFirebase); }, 10000);    
 });
 </script>
 </body>
