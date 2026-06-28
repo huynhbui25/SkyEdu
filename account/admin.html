@@ -4501,6 +4501,23 @@ window.App = App;
 // Initialize Lucide icons after DOM load and App init
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 100);
+// Auto-sync câu hỏi từ Firebase khi trang admin load
+window.addEventListener('load', function () {
+    var waitFirebase = setInterval(function () {
+        if (typeof QuestionBank !== 'undefined' && typeof firebase !== 'undefined'
+            && typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
+            clearInterval(waitFirebase);
+            QuestionBank.syncFromFirebase().then(function () {
+                console.log('[Admin] Đã sync câu hỏi từ Firebase thành công');
+                // Nếu trang đang hiển thị danh sách câu hỏi, reload lại UI
+                if (typeof App !== 'undefined' && App.refreshCurrentPage) {
+                    App.refreshCurrentPage();
+                }
+            });
+        }
+    }, 500);
+    // Timeout 10 giây
+    setTimeout(function () { clearInterval(waitFirebase); }, 10000);    
 });
 </script>
 </body>
