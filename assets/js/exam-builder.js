@@ -220,6 +220,47 @@
 
         /** Lấy toàn bộ đề thi */
         getAll() {
+            // PHẦN 1: Nếu lần đầu load, cố gắng sync từ Firebase ngay
+            if (!window._ExamBuilder_syncInitiated) {
+                window._ExamBuilder_syncInitiated = true;
+                // Gọi sync background (không chặn)
+                if (_isFirebaseReady()) {
+                    _loadFromFirebase().then(fbExams => {
+                        if (fbExams && fbExams.length > 0) {
+                            const local = _readLocal();
+                            const merged = new Map();
+                            
+                            // Thêm tất cả từ Firebase
+                            fbExams.forEach(e => merged.set(e.id, e));
+                            
+                            // So sánh với local, lấy phiên bản mới nhất
+                            local.forEach(e => {
+                                if (!merged.has(e.id)) {
+                                    // Nếu chỉ có ở local, giữ lại
+                                    merged.set(e.id, e);
+                                } else {
+                                    // Nếu cả 2 có, lấy phiên bản mới nhất (dựa vào updatedAt)
+                                    const fbVersion = merged.get(e.id);
+                                    const localTime = new Date(e.updatedAt || 0).getTime();
+                                    const fbTime = new Date(fbVersion.updatedAt || 0).getTime();
+                                    if (localTime > fbTime) {
+                                        merged.set(e.id, e);
+                                    }
+                                }
+                            });
+                            
+                            // Ghi lại localStorage với dữ liệu đã merge
+                            _writeLocal(Array.from(merged.values()));
+                            console.log('[ExamBuilder] Đã sync', fbExams.length, 'đề từ Firebase xong');
+                        }
+                    }).catch(err => {
+                        console.warn('[ExamBuilder] Sync Firebase lỗi:', err);
+                        // Dù có lỗi vẫn tiếp tục, dùng dữ liệu local
+                    });
+                }
+            }
+            
+            // PHẦN 2: Trả về dữ liệu hiện tại từ localStorage
             return _readLocal();
         },
 
