@@ -4465,31 +4465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 });
-        }
-    }
-// Chờ Firebase sẵn sàng rồi mới sync
-    function waitAndSync() {
-        var tries = 0;
-        var iv = setInterval(function () {
-            tries++;
-            if (typeof firebase !== 'undefined' && firebase.database
-                && typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
-                clearInterval(iv);
-                syncAllFromFirebase();
-            }
-            if (tries > 40) clearInterval(iv); // timeout 20 giây
-        }, 500);
-    }
 
-    if (typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
-        syncAllFromFirebase();
-    } else {
-        window.addEventListener('firebaseReady', function () {
-            setTimeout(syncAllFromFirebase, 200); // nhỏ delay cho chắc
-        });
-        waitAndSync(); // polling fallback
-    }
-});
 // Hàm khóa/mở khóa tài khoản
 async function toggleBan(userId, banned) {
     if (!confirm(banned ? 'Khóa tài khoản này?' : 'Mở khóa tài khoản này?')) return;
