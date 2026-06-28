@@ -4335,50 +4335,36 @@ const App = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Kiểm tra đăng nhập trước khi cho vào trang admin
+    // Auth guard
     const stored = localStorage.getItem('currentUser');
-    if (!stored) {
-        window.location.href = 'dang-nhap.html';
-        return;
-    }
+    if (!stored) { window.location.href = 'dang-nhap.html'; return; }
     try {
-        const user = JSON.parse(stored);
-        if (!user || (user.role !== 'admin' && user.role !== 'moderator')) {
-            window.location.href = 'dang-nhap.html';
-            return;
+        const u = JSON.parse(stored);
+        if (!u || (u.role !== 'admin' && u.role !== 'moderator')) {
+            window.location.href = 'dang-nhap.html'; return;
         }
-    } catch(e) {
-        window.location.href = 'dang-nhap.html';
-        return;
-    }
+    } catch(e) { window.location.href = 'dang-nhap.html'; return; }
+
     App.init();
-// ✅ [FIX] Sync dữ liệu từ Firebase khi page load
+
     if (typeof ExamBuilder !== 'undefined' && ExamBuilder.syncFromFirebase) {
         ExamBuilder.syncFromFirebase()
             .then(() => {
-                console.log('[Admin] ✅ Sync dữ liệu từ Firebase xong');
                 if (typeof App !== 'undefined' && App.renderExamList) {
                     setTimeout(() => App.renderExamList(), 100);
                 }
             })
-            .catch(err => {
-                console.warn('[Admin] ⚠️ Sync Firebase lỗi:', err);
-            });
+            .catch(err => console.warn('[Admin] Sync ExamBuilder lỗi:', err));
     }
-    // Sync dữ liệu từ Firebase về localStorage khi admin.html load
-    // Không sync = máy khác không thấy đề, câu hỏi, và danh sách tài khoản
+
     function syncAllFromFirebase() {
         window._syncDone = true;
-
-        // Đọc thẳng từ Firebase — cả 2 path exams/ và phongluyen_exams/
         if (typeof firebase === 'undefined' || !firebase.database) {
             console.warn('[Admin] Firebase chưa sẵn sàng');
             return;
         }
-
         const db = firebase.database();
 
-        // Sync đề thi: đọc cả exams/ và phongluyen_exams/ rồi merge
         Promise.all([
             db.ref('exams').once('value').catch(() => null),
             db.ref('phongluyen_exams').once('value').catch(() => null)
@@ -4388,21 +4374,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (snap2 && snap2.val()) Object.values(snap2.val()).forEach(e => {
                 if (!merged.has(e.id)) merged.set(e.id, e);
             });
-
             const allExams = Array.from(merged.values());
-            if (allExams.length > 0) {
-                // Ghi vào localStorage để ExamBuilder.getAll() đọc được
-                localStorage.setItem('sky_exams', JSON.stringify(allExams));
-                localStorage.setItem('exams', JSON.stringify(allExams));
-                console.log('[Admin] Đồng bộ', allExams.length, 'đề từ Firebase xong');
-                App.renderExamList();
-            } else {
-                console.log('[Admin] Firebase không có đề thi nào');
-                App.renderExamList();
-            }
+            localStorage.setItem('sky_exams', JSON.stringify(allExams));
+            localStorage.setItem('exams', JSON.stringify(allExams));
+            App.renderExamList();
         }).catch(err => console.warn('[Admin] Sync đề thi lỗi:', err));
 
-        // Sync kho câu hỏi
         db.ref('questionBank').once('value').then(snap => {
             if (snap && snap.val()) {
                 const questions = Object.values(snap.val());
@@ -4412,7 +4389,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }).catch(err => console.warn('[Admin] Sync câu hỏi lỗi:', err));
 
-        // Load danh sách tài khoản
         if (typeof FirebaseAPI !== 'undefined' && FirebaseAPI.getAllUsers) {
             FirebaseAPI.getAllUsers().then(users => {
                 const container = document.getElementById('usersList');
@@ -4467,11 +4443,28 @@ document.addEventListener('DOMContentLoaded', () => {
                             `).join('')}
                         </tbody>
                     </table>`;
-                console.log('[Admin] Đã load', users.length, 'tài khoản');
-            }).catch(err => {
+            }).catch(() => {
                 const container = document.getElementById('usersList');
                 if (container) container.innerHTML = '<div class="empty-state"><h3>Lỗi tải danh sách</h3><p>Kiểm tra Firebase Rules</p></div>';
             });
+        }
+    }
+
+    // Polling chờ Firebase ready rồi sync
+    var _syncTries = 0;
+    var _syncInterval = setInterval(function() {
+        _syncTries++;
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0
+            && typeof FirebaseAPI !== 'undefined' && FirebaseAPI.isReady && FirebaseAPI.isReady()) {
+            clearInterval(_syncInterval);
+            syncAllFromFirebase();
+        }
+        if (_syncTries > 20) {
+            clearInterval(_syncInterval);
+            if (!window._syncDone) syncAllFromFirebase();
+        }
+    }, 500);
+});
         }
     }
 // Chờ Firebase sẵn sàng rồi mới sync
